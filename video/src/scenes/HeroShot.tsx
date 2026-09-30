@@ -2,7 +2,9 @@ import { AbsoluteFill, Img, useCurrentFrame } from 'remotion';
 import { examples } from '../../../src/data/content';
 import { AnswerCard } from '../components/AnswerCard';
 import { Flag } from '../components/Flag';
-import { BrowserFrame } from '../components/Frames';
+import { BrowserFrame, PhoneFrame } from '../components/Frames';
+import { MobileHero } from '../components/MobileHero';
+import { useVertical } from '../lib/format';
 import { Icon } from '../components/Icon';
 import { scenes } from '../lib/assets';
 import { EXPO_IN_OUT, keys, prog, rise, typeText } from '../lib/motion';
@@ -14,8 +16,27 @@ const SLIDES = [
   { ex: examples[4], at: 282 },
 ];
 
+/** 9:16 cut: the phone fills the frame, swings in, pushes toward the photo, settles */
+const VerticalHero: React.FC<{ frame: number }> = ({ frame }) => {
+  const rx = keys(frame, [0, 80], [24, 0]);
+  const ry = keys(frame, [0, 80], [-22, 0]);
+  const scale = keys(frame, [0, 80, 170, 250, 396], [1.3, 1.8, 1.98, 1.86, 1.9]);
+  const ty = keys(frame, [0, 80, 170, 250], [260, 10, -40, 0]);
+  return (
+    <AbsoluteFill className="items-center justify-center bg-[linear-gradient(180deg,#efece7,#e4e0da)]" style={{ perspective: 2600 }}>
+      <div style={{ transform: `translateY(${ty}px) scale(${scale}) rotateX(${rx}deg) rotateY(${ry}deg)` }}>
+        <PhoneFrame>
+          <MobileHero frame={frame} slides={SLIDES} introAt={0} firstAnswerAt={120} />
+        </PhoneFrame>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 export const HeroShot: React.FC = () => {
   const frame = useCurrentFrame();
+  const vertical = useVertical();
+  if (vertical) return <VerticalHero frame={frame} />;
 
   // camera: swing in from a 3D tilt, push toward the search bar, settle back
   const rx = keys(frame, [0, 80], [26, 0]);

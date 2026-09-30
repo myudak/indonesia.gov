@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { AbsoluteFill, Img, useCurrentFrame } from 'remotion';
 import { Icon } from '../components/Icon';
 import { roadmap } from '../lib/assets';
+import { useVertical } from '../lib/format';
 import { keys, pop, prog, rise } from '../lib/motion';
 
 // Port of src/components/Roadmap.astro. Each card flies in with a spring; columns drift at their own speed.
@@ -21,11 +22,17 @@ const Fly: React.FC<{ frame: number; at: number; className?: string; style?: CSS
 
 export const Board: React.FC = () => {
   const frame = useCurrentFrame();
+  const vertical = useVertical();
 
   // camera: start close on the left columns, pan right, then pull out to the whole board
-  const scale = keys(frame, [0, 60, 170, 250, 320], [1.75, 1.75, 1.75, 1.18, 1.14]);
-  const panX = keys(frame, [0, 60, 170, 250], [560, 560, -560, 0]);
-  const panY = keys(frame, [0, 170, 250], [120, 120, 40]);
+  // 16:9 pans across one long row; 9:16 stacks the six columns into a 3×2 grid and pans diagonally
+  const scale = vertical
+    ? keys(frame, [0, 60, 170, 250, 320], [2.3, 2.3, 2.3, 1.36, 1.33])
+    : keys(frame, [0, 60, 170, 250, 320], [1.75, 1.75, 1.75, 1.18, 1.14]);
+  const panX = vertical ? keys(frame, [0, 60, 170, 250], [330, 330, -330, 0]) : keys(frame, [0, 60, 170, 250], [560, 560, -560, 0]);
+  const panY = vertical ? keys(frame, [0, 60, 170, 250], [620, 620, -560, 70]) : keys(frame, [0, 170, 250], [120, 120, 40]);
+  const PT = vertical ? [60, 10, 0, 30, 0, 20] : [190, 130, 100, 60, 0, 40];
+  const colStyle = (i: number, speed: number): CSSProperties => ({ ...col(speed), paddingTop: PT[i] });
 
   const col = (speed: number): CSSProperties => ({ transform: `translateY(${keys(frame, [0, 320], [90 * speed, -70 * speed], (t) => t)}px)` });
   const tick = (i: number) => pop(frame, 95 + i * 9, { damping: 11, stiffness: 220 });
@@ -36,14 +43,20 @@ export const Board: React.FC = () => {
 
   return (
     <AbsoluteFill className="items-center justify-center overflow-hidden bg-paper">
-      <div className="absolute left-0 right-0 top-[54px] text-center" style={{ ...rise(frame, 190, { dist: 24 }) }}>
+      <div className={`absolute left-0 right-0 text-center ${vertical ? 'top-[170px]' : 'top-[54px]'}`} style={{ ...rise(frame, 190, { dist: 24 }) }}>
         <h2 className="font-serif text-[76px] leading-none tracking-[-0.02em]">Segera hadir di 2027</h2>
       </div>
 
       <div style={{ transform: `translate(${panX}px, ${panY}px) scale(${scale})` }}>
-        <div className="flex w-[1480px] items-start justify-center gap-5">
+        <div
+          className={
+            vertical
+              ? 'grid w-[760px] grid-cols-[250px_260px_210px] items-start justify-items-center gap-x-5 gap-y-10'
+              : 'flex w-[1480px] items-start justify-center gap-5'
+          }
+        >
           {/* 1: job matches */}
-          <div className="flex w-[230px] flex-col gap-5 pt-[190px]" style={col(0.9)}>
+          <div className="flex w-[230px] flex-col gap-5" style={colStyle(0, 0.9)}>
             <Fly frame={frame} at={6}>
               <p className={title}>3 formasi paling cocok untukmu</p>
               <div className="mt-2.5 rounded-[14px] border border-line">
@@ -75,7 +88,7 @@ export const Board: React.FC = () => {
           </div>
 
           {/* 2: campsites + CV drop zone */}
-          <div className="flex w-[260px] flex-col gap-5 pt-[130px]" style={col(1.15)}>
+          <div className="flex w-[260px] flex-col gap-5" style={colStyle(1, 1.15)}>
             <Fly frame={frame} at={14}>
               <p className={title}>Pilih lokasi kemah di TN Gede Pangrango</p>
               <div className="mt-2.5 grid grid-cols-[1fr_78px] gap-2 overflow-hidden rounded-[14px] border border-line p-1.5">
@@ -134,7 +147,7 @@ export const Board: React.FC = () => {
           </div>
 
           {/* 3: passport photo + update data */}
-          <div className="flex w-[210px] flex-col gap-5 pt-[100px]" style={col(0.8)}>
+          <div className="flex w-[210px] flex-col gap-5" style={colStyle(2, 0.8)}>
             <Fly frame={frame} at={22}>
               <p className={title}>Konfirmasi fotomu</p>
               <div className="relative mt-2.5 overflow-hidden rounded-[10px] border border-line bg-[repeating-radial-gradient(circle_at_70%_60%,#eef3ea_0_3px,#e3ece0_3px_6px)] p-2">
@@ -184,7 +197,7 @@ export const Board: React.FC = () => {
           </div>
 
           {/* 4: medicines + housing + login */}
-          <div className="flex w-[250px] flex-col gap-5 pt-[60px]" style={col(1.2)}>
+          <div className="flex w-[250px] flex-col gap-5" style={colStyle(3, 1.2)}>
             <Fly frame={frame} at={18}>
               <p className={title}>Cek obat yang ditanggung BPJS</p>
               <div className="mt-2.5 flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-muted">
@@ -233,7 +246,7 @@ export const Board: React.FC = () => {
           </div>
 
           {/* 5: passport cover + tracking */}
-          <div className="flex w-[200px] flex-col gap-5" style={col(0.85)}>
+          <div className="flex w-[200px] flex-col gap-5" style={colStyle(4, 0.85)}>
             <Fly frame={frame} at={10} className="" style={{ perspective: 700 }}>
               <div className="relative aspect-[3/4.2] overflow-hidden rounded-[10px] p-4 text-center shadow-[0_30px_60px_-20px_rgba(0,0,0,0.5)]" style={{ transform: `rotateY(${tilt}deg) rotateX(${tilt * -0.4}deg)` }}>
                 <Img src={roadmap.passportCover} className="absolute inset-0 size-full object-cover" />
@@ -262,7 +275,7 @@ export const Board: React.FC = () => {
           </div>
 
           {/* 6: faskes on a map */}
-          <div className="flex w-[210px] flex-col gap-5 pt-[40px]" style={col(1.1)}>
+          <div className="flex w-[210px] flex-col gap-5" style={colStyle(5, 1.1)}>
             <Fly frame={frame} at={26}>
               <p className={title}>Pilih faskes BPJS terdekat</p>
               <div className="relative mt-2.5 h-[170px] overflow-hidden rounded-[14px] border border-line">

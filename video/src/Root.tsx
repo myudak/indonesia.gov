@@ -76,5 +76,9 @@ const Reel: React.FC = () => (
 );
 
 export const RemotionRoot: React.FC = () => (
-  <Composition id="Reel" component={Reel} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} />
+  <>
+    <Composition id="Reel" component={Reel} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} />
+    {/* Instagram Reels / TikTok cut: same timeline and music, scenes recompose via useVertical() */}
+    <Composition id="ReelVertical" component={Reel} durationInFrames={DURATION} fps={FPS} width={1080} height={1920} />
+  </>
 );

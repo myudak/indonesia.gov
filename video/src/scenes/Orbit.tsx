@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { AbsoluteFill, random, useCurrentFrame } from 'remotion';
 import { orbitSites } from '../../../src/data/content';
+import { useVertical } from '../lib/format';
 import { keys, prog, rise } from '../lib/motion';
 
 // Port of the canvas sphere in src/components/Orbit.astro, driven by frame instead of a ticker.
@@ -10,6 +11,7 @@ const SIZE = 1000;
 
 export const Orbit: React.FC = () => {
   const frame = useCurrentFrame();
+  const vertical = useVertical();
   const canvas = useRef<HTMLCanvasElement>(null);
 
   const tiles = useMemo(() => {
@@ -112,13 +114,19 @@ export const Orbit: React.FC = () => {
   }, [assemble, rotX, rotY, tiles]);
 
   return (
-    <AbsoluteFill className="flex-row items-center bg-[radial-gradient(90%_90%_at_35%_50%,#ffffff_0%,#f4f3f0_70%)] pl-[80px]">
+    <AbsoluteFill
+      className={
+        vertical
+          ? 'flex-col items-center justify-center bg-[radial-gradient(90%_60%_at_50%_35%,#ffffff_0%,#f4f3f0_70%)]'
+          : 'flex-row items-center bg-[radial-gradient(90%_90%_at_35%_50%,#ffffff_0%,#f4f3f0_70%)] pl-[80px]'
+      }
+    >
       <canvas ref={canvas} width={SIZE} height={SIZE} style={{ width: 1000, height: 1000, transform: `scale(${keys(frame, [0, 250], [0.92, 1.02])})` }} />
-      <div className="ml-6 w-[640px]">
+      <div className={vertical ? '-mt-16 w-[900px] text-center' : 'ml-6 w-[640px]'}>
         <p className="text-[20px] font-semibold uppercase tracking-[0.3em] text-merah" style={rise(frame, 70, { dist: 16 })}>
           .go.id
         </p>
-        <h2 className="mt-5 font-serif text-[118px] leading-[0.98] tracking-[-0.02em]">
+        <h2 className={`mt-5 font-serif leading-[0.98] tracking-[-0.02em] ${vertical ? 'text-[132px]' : 'text-[118px]'}`}>
           {['Ribuan situs,', 'jadi satu.'].map((line, i) => (
             <span key={line} className="block overflow-hidden">
               <span className="block" style={{ transform: `translateY(${(1 - prog(frame, 80 + i * 10, 60)) * 105}%)` }}>
@@ -127,7 +135,7 @@ export const Orbit: React.FC = () => {
             </span>
           ))}
         </h2>
-        <p className="mt-8 max-w-[34ch] text-[26px] leading-relaxed text-muted" style={rise(frame, 110, { dist: 20 })}>
+        <p className={`mt-8 max-w-[34ch] leading-relaxed text-muted ${vertical ? 'mx-auto text-[34px]' : 'text-[26px]'}`} style={rise(frame, 110, { dist: 20 })}>
           Nggak perlu lagi loncat dari satu situs ke situs lain. Semua layanan pemerintah, satu tempat.
         </p>
       </div>

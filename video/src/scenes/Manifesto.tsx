@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
+import { useVertical } from '../lib/format';
 import { keys, pop, prog } from '../lib/motion';
 
 type Piece = { text: string } | { chip: 'flag' | 'seals' | 'print' };
@@ -21,6 +22,7 @@ const chipBase = 'relative mx-[0.06em] inline-grid size-[0.92em] place-items-cen
 
 export const Manifesto: React.FC = () => {
   const frame = useCurrentFrame();
+  const vertical = useVertical();
   const drift = keys(frame, [0, 250], [1, 1.08]);
   const driftY = keys(frame, [0, 250], [30, -20]);
 
@@ -103,9 +105,9 @@ export const Manifesto: React.FC = () => {
   });
 
   return (
-    <AbsoluteFill className="items-center justify-center bg-white px-[140px]">
+    <AbsoluteFill className={`items-center justify-center bg-white ${vertical ? 'px-[70px]' : 'px-[140px]'}`}>
       <p
-        className="text-center font-serif text-[104px] leading-[1.04] tracking-[-0.02em] text-ink"
+        className={`text-center font-serif ${vertical ? 'text-[100px]' : 'text-[104px]'} leading-[1.04] tracking-[-0.02em] text-ink`}
         style={{ transform: `translateY(${driftY}px) scale(${drift})`, textWrap: 'balance' }}
       >
         {out}
