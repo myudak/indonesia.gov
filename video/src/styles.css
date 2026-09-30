@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Same tokens as the site (src/styles/global.css) so ported markup looks identical */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  --color-ink: #15171b;
+  --color-muted: #6a6f78;
+  --color-line: #e7e5e1;
+  --color-paper: #f4f3f0;
+  --color-merah: #c8102e;
+  --color-merah-deep: #6e0a1a;
+}
+
+html,
+body {
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}

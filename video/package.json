@@ -1,0 +1,26 @@
+{
+  "name": "indonesia-gov-reel",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render Reel out/raw.mp4 --codec h264 --crf 14 && npm run finish",
+    "still": "remotion still Reel",
+    "finish": "remotion ffmpeg -y -v error -i out/raw.mp4 -vf scale=in_range=full:out_range=limited -pix_fmt yuv420p -c:v libx264 -crf 16 -preset slow -movflags +faststart out/indonesia-gov-reel.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.530",
+    "@remotion/google-fonts": "^4.0.530",
+    "@remotion/tailwind-v4": "^4.0.530",
+    "@remotion/transitions": "^4.0.530",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.530",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

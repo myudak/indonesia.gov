@@ -27,3 +27,16 @@ npm run dev
 - `src/components/Roadmap.astro` — kartu pratinjau fitur 2027 dengan parallax
 - `src/components/ChatDock.astro` — bar tanya yang menempel + panel chat demo (jawaban contoh)
 - `src/data/content.ts` — semua contoh pertanyaan & jawaban
+
+## Video showcase (Remotion)
+
+A 30-second 1920×1080 60fps reel lives in `video/`, built with Remotion. It reuses `src/data/content.ts` and the photos in `src/assets` directly.
+
+```bash
+cd video
+npm install
+npm run studio   # preview & scrub in Remotion Studio
+npm run render   # → video/out/indonesia-gov-reel.mp4
+```
+
+Scenes are in `video/src/scenes/` (Intro, HeroShot, Manifesto, Orbit, Board, Devices, Outro), and the end-card credit line is `CREDIT` in `video/src/Root.tsx`.

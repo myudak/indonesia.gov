@@ -3,3 +3,5 @@ dist/
 .astro/
 .DS_Store
 .env
+video/node_modules/
+video/out/
