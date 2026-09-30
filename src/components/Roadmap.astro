@@ -1,12 +1,11 @@
 ---
 import { Image } from 'astro:assets';
 
-// Optional photos. Drop files named camp / portrait / rumah (.png, .jpg or .webp) into
-// src/assets/roadmap and they replace the placeholders automatically.
+// Optional images. Drop files into src/assets/roadmap (.png, .jpg or .webp) using the names below
+// (portrait, rumah, camp-*, agency-*) and they replace the placeholders automatically.
 const files = import.meta.glob<{ default: ImageMetadata }>('../assets/roadmap/*.{png,jpg,jpeg,webp}', { eager: true });
 const photo = (name: string) =>
   Object.entries(files).find(([path]) => path.split('/').pop()!.split('.')[0] === name)?.[1].default;
-const camp = photo('camp');
 const portrait = photo('portrait');
 const rumah = photo('rumah');
 
@@ -24,22 +23,23 @@ const i = {
 const svg = (name: keyof typeof i, cls = 'size-3') =>
   `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${i[name]}</svg>`;
 
+// [label, detail, fallback color, image name]
 const jobs = [
-  ['Pranata Komputer Ahli Pertama', 'Badan Pusat Statistik', '#23408e'],
-  ['Analis Data Ahli Muda', 'Kementerian Kesehatan', '#0c7a4d'],
-  ['Perancang Sistem Informasi', 'BMKG', '#0d6070'],
+  ['Pranata Komputer Ahli Pertama', 'Badan Pusat Statistik', '#23408e', 'agency-bps'],
+  ['Analis Data Ahli Muda', 'Kementerian Kesehatan', '#0c7a4d', 'agency-kemenkes'],
+  ['Perancang Sistem Informasi', 'BMKG', '#0d6070', 'agency-bmkg'],
 ];
 const camps = [
-  ['Bumi Perkemahan Mandalawangi', 'Cibodas, Cianjur'],
-  ['Pos Kandang Batu', 'Jalur Cibodas'],
-  ['Pos Kandang Badak', 'Jalur Cibodas'],
-  ['Alun-alun Suryakencana', 'Jalur Gunung Putri'],
+  ['Bumi Perkemahan Mandalawangi', 'Cibodas, Cianjur', 'camp-mandalawangi'],
+  ['Pos Kandang Batu', 'Jalur Cibodas', 'camp-kandang-batu'],
+  ['Pos Kandang Badak', 'Jalur Cibodas', 'camp-kandang-badak'],
+  ['Alun-alun Suryakencana', 'Jalur Gunung Putri', 'camp-suryakencana'],
 ];
 const agencies = [
-  ['Dukcapil', 'D', '#8a2c6d'],
-  ['Imigrasi', 'I', '#23408e'],
-  ['BPJS Kesehatan', 'B', '#0c7a4d'],
-  ['Direktorat Jenderal Pajak', 'P', '#b8860b'],
+  ['Dukcapil', '#8a2c6d', 'agency-dukcapil'],
+  ['Imigrasi', '#23408e', 'agency-imigrasi'],
+  ['BPJS Kesehatan', '#0c7a4d', 'agency-bpjs'],
+  ['Direktorat Jenderal Pajak', '#b8860b', 'agency-djp'],
 ];
 ---
 
@@ -63,12 +63,16 @@ const agencies = [
           <p class="rm-title">3 formasi paling cocok untukmu</p>
           <div class="mt-2.5 rounded-[14px] border border-line">
             {
-              jobs.map(([role, org, color], n) => (
+              jobs.map(([role, org, color, icon], n) => (
                 <div class:list={['px-2.5 py-2', n > 0 && 'border-t border-line']}>
                   <div class="flex items-start gap-2">
-                    <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-[8px] font-bold text-white" style={`background:${color}`}>
-                      {org[0]}
-                    </span>
+                    {photo(icon) ? (
+                      <Image src={photo(icon)!} alt="" width={64} class="mt-0.5 size-5 shrink-0 rounded-full object-cover shadow-[0_0_0_1px_rgba(21,23,27,0.08)]" />
+                    ) : (
+                      <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-[8px] font-bold text-white" style={`background:${color}`}>
+                        {org[0]}
+                      </span>
+                    )}
                     <div class="min-w-0 flex-1">
                       <p class="truncate font-semibold">{role}</p>
                       <p class="truncate text-muted">{org}</p>
@@ -97,10 +101,10 @@ const agencies = [
           <div class="relative mt-2.5 grid grid-cols-[1fr_78px] gap-2 overflow-hidden rounded-[14px] border border-line p-1.5">
             <div class="space-y-1.5">
               {
-                camps.map(([name, place], n) => (
+                camps.map(([name, place, image]) => (
                   <div class="flex items-center gap-1.5 rounded-lg bg-white p-1 shadow-[0_0_0_1px_rgba(21,23,27,0.06)]">
-                    {camp ? (
-                      <Image src={camp} alt="" width={120} class="size-7 shrink-0 rounded-md object-cover" style={`object-position:${[10, 38, 66, 94][n]}% 50%`} />
+                    {photo(image) ? (
+                      <Image src={photo(image)!} alt="" width={96} class="size-7 shrink-0 rounded-md object-cover" />
                     ) : (
                       <span class="size-7 shrink-0 rounded-md bg-[linear-gradient(160deg,#9cc49a,#4f7f5a)]" />
                     )}
@@ -181,9 +185,13 @@ const agencies = [
           <p class="rm-title">Perbarui data di semua instansi</p>
           <div class="mt-2.5 space-y-0 rounded-[14px] border border-line">
             {
-              agencies.map(([name, letter, color], n) => (
+              agencies.map(([name, color, icon], n) => (
                 <div class:list={['flex items-center gap-2 px-2.5 py-2', n > 0 && 'border-t border-line']}>
-                  <span class="grid size-5 place-items-center rounded-full text-[8px] font-bold text-white" style={`background:${color}`}>{letter}</span>
+                  {photo(icon) ? (
+                    <Image src={photo(icon)!} alt="" width={64} class="size-5 shrink-0 rounded-full object-cover shadow-[0_0_0_1px_rgba(21,23,27,0.08)]" />
+                  ) : (
+                    <span class="grid size-5 place-items-center rounded-full text-[8px] font-bold text-white" style={`background:${color}`}>{name[0]}</span>
+                  )}
                   <span class="flex-1 truncate font-semibold">{name}</span>
                   <span class="rm-tick grid size-3.5 place-items-center rounded-[4px] bg-[#23408e] text-white" set:html={svg('check', 'size-2.5')} />
                 </div>
