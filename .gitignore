@@ -7,3 +7,6 @@ video/node_modules/
 video/out/
 
 .vercel
+
+# local AI/editor tooling
+.claude/
