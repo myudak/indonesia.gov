@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Manifesto from '../components/Manifesto.astro';
+import Orbit from '../components/Orbit.astro';
+import Features from '../components/Features.astro';
+import Roadmap from '../components/Roadmap.astro';
+import Footer from '../components/Footer.astro';
+import ChatDock from '../components/ChatDock.astro';
+import Menu from '../components/Menu.astro';
+---
+
+<Base>
+  <p class="flex items-center justify-center gap-1.5 px-4 py-2 text-center text-[11px] text-muted">
+    Konsep desain portofolio — bukan situs resmi Pemerintah Republik Indonesia
+  </p>
+  <main>
+    <Hero />
+    <Manifesto />
+    <Orbit />
+    <Features />
+    <Roadmap />
+  </main>
+  <Footer />
+  <ChatDock />
+  <Menu />
+</Base>

@@ -1,0 +1,139 @@
+---
+// Big serif statement that "reads itself" as you scroll, with animated inline chips.
+---
+
+<section id="manifesto" class="px-4 py-[18vh] sm:py-[24vh]">
+  <p class="sr-only">
+    Indonesia.gov pakai AI untuk memberi jawaban sederhana hanya dari sumber resmi pemerintah. Gratis, tanpa iklan, dan
+    selalu menjaga privasimu.
+  </p>
+  <p
+    aria-hidden="true"
+    class="mx-auto max-w-[1120px] text-balance text-center font-serif text-[clamp(2.5rem,6.6vw,5.9rem)] leading-[1.02] tracking-[-0.02em]"
+    data-manifesto
+  >
+    <span class="m-text">Indonesia.gov</span>
+    <span class="chip chip-flag bg-ink text-white" data-chip="flag">
+      <svg class="arrow w-[0.42em]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6"></path>
+      </svg>
+      <span class="flag absolute inset-0 flex flex-col"><span class="flex-1 bg-merah"></span><span class="flex-1 bg-white"></span></span>
+    </span>
+    <span class="m-text">pakai AI untuk memberi jawaban sederhana hanya dari</span>
+    <span class="chip-group" data-chip="seals">
+      <span class="chip seal bg-[#23408e] text-[#e7c873]">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3.5 9 12 4.5 20.5 9M6 10.5V17M10 10.5V17M14 10.5V17M18 10.5V17M4 19.5h16"></path></svg>
+      </span>
+      <span class="chip seal bg-[#0c7a4d] text-white">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5 19 6.5v5c0 4.3-2.9 7.6-7 9.5-4.1-1.9-7-5.2-7-9.5v-5z"></path><path d="m8.8 12 2.3 2.3 4.2-4.6" stroke-linecap="round"></path></svg>
+      </span>
+      <span class="chip seal bg-merah text-white">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M7.5 20h9M5 8h14M5 8l-2.5 6h5zM19 8l-2.5 6h5z"></path></svg>
+      </span>
+    </span>
+    <span class="m-text">sumber resmi pemerintah. Gratis, tanpa iklan, dan selalu menjaga</span>
+    <span class="chip chip-print" data-chip="print">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M6.2 17.8A8 8 0 0 1 17.6 6.3"></path>
+        <path d="M19.4 9.3c.4.9.6 1.8.6 2.7v1.6"></path>
+        <path d="M9.3 20.2A10 10 0 0 1 8 15v-3a4 4 0 0 1 8 0v2.2c0 1.6.3 3.1 1 4.5"></path>
+        <path d="M12 12v2.6c0 2.4.7 4.6 2 6.2"></path>
+        <path d="M4.3 9.2c.4-.9.9-1.8 1.5-2.5"></path>
+      </svg>
+    </span>
+    <span class="m-text">privasimu.</span>
+  </p>
+</section>
+
+<style>
+  .chip {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 0.92em;
+    height: 0.92em;
+    margin: 0 0.06em;
+    border-radius: 9999px;
+    overflow: hidden;
+    vertical-align: -0.12em;
+  }
+  .chip svg {
+    width: 0.5em;
+  }
+  .chip-group {
+    display: inline-flex;
+    margin: 0 0.1em;
+    vertical-align: -0.12em;
+  }
+  .chip-group .seal {
+    margin: 0 -0.12em;
+    box-shadow: 0 0 0 0.05em #fff;
+  }
+  .chip-print {
+    color: var(--color-merah);
+    background: radial-gradient(circle, #ffe3e8 0%, #ffd0d8 45%, rgba(255, 208, 216, 0) 72%);
+    overflow: visible;
+  }
+  .chip-print svg {
+    width: 0.62em;
+  }
+</style>
+
+<script>
+  import { gsap, SplitText, ScrollTrigger, prefersReducedMotion } from '../scripts/motion';
+
+  const para = document.querySelector<HTMLElement>('[data-manifesto]')!;
+
+  if (!prefersReducedMotion()) {
+    const texts = [...para.querySelectorAll<HTMLElement>('.m-text')];
+    const splits = texts.map((t) => SplitText.create(t, { type: 'words' }));
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: para,
+        start: 'top 78%',
+        end: 'bottom 45%',
+        scrub: 0.8,
+      },
+    });
+
+    let cursor = 0;
+    for (const node of para.children) {
+      const el = node as HTMLElement;
+      if (el.classList.contains('m-text')) {
+        const words = splits[texts.indexOf(el)].words;
+        tl.fromTo(words, { opacity: 0.12 }, { opacity: 1, duration: 0.2, stagger: 0.12 }, cursor);
+        cursor += words.length * 0.12;
+        continue;
+      }
+
+      const kind = el.dataset.chip;
+      if (kind === 'flag') {
+        tl.fromTo(el, { scale: 0, rotate: -90 }, { scale: 1, rotate: 0, duration: 0.5, ease: 'back.out(2)' }, cursor)
+          .fromTo(el.querySelector('.arrow'), { rotate: 0 }, { rotate: -90, scale: 0.4, opacity: 0, duration: 0.4 }, cursor + 0.5)
+          .fromTo(el.querySelector('.flag'), { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.5 }, cursor + 0.6);
+        cursor += 0.6;
+      } else if (kind === 'seals') {
+        tl.fromTo(
+          el.querySelectorAll('.seal'),
+          { scale: 0, x: (i) => -20 * (i + 1) },
+          { scale: 1, x: 0, duration: 0.5, stagger: 0.15, ease: 'back.out(2.2)' },
+          cursor,
+        );
+        cursor += 0.6;
+      } else if (kind === 'print') {
+        tl.fromTo(el, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2)' }, cursor).fromTo(
+          el.querySelectorAll('path'),
+          { drawSVG: '0%' },
+          { drawSVG: '100%', duration: 0.6, stagger: 0.08 },
+          cursor + 0.1,
+        );
+        cursor += 0.6;
+      }
+    }
+
+    // Recalculate after fonts swap in, since line breaks change word positions
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
+  }
+</script>

@@ -1,0 +1,159 @@
+---
+import Icon from './Icon.astro';
+---
+
+<section id="rencana" class="overflow-hidden bg-paper px-4 pb-24 pt-28 sm:pb-32 sm:pt-36">
+  <div class="mx-auto max-w-[640px] text-center">
+    <h2 class="font-serif text-[clamp(2.4rem,5.5vw,4.2rem)] leading-[1] tracking-[-0.02em]" data-rise-lines>
+      Segera hadir di 2027
+    </h2>
+    <p class="mt-5 text-[17px] leading-relaxed text-muted" data-rise>
+      Lebih dari sekadar jawaban: kamu bisa isi formulir, pantau progres, dan atur semua urusanmu di satu tempat.
+    </p>
+    <a href="#rencana" class="text-link mt-6" data-rise>Lihat rencana ke depan</a>
+  </div>
+
+  <!-- Floating previews. Stacked on mobile, scattered with parallax on large screens. -->
+  <div class="relative mx-auto mt-16 grid max-w-[1200px] gap-4 sm:grid-cols-2 lg:mt-24 lg:block lg:h-[820px]" data-board>
+    <!-- SIM tracking -->
+    <div class="mock-card lg:absolute lg:left-[2%] lg:top-[4%] lg:w-[270px]" data-speed="0.9" data-rise>
+      <p class="font-bold">Perpanjang SIM A</p>
+      <p class="mt-0.5 text-muted">Estimasi selesai 12 Nov 2026</p>
+      <div class="mt-4 flex items-center">
+        <span class="grid size-5 place-items-center rounded-full bg-merah text-white"><Icon name="check" class="size-3" /></span>
+        <span class="h-[3px] flex-1 bg-merah"></span>
+        <span class="size-5 rounded-full border-[5px] border-merah bg-white"></span>
+        <span class="h-[3px] flex-1 bg-ink/10"></span>
+        <span class="size-5 rounded-full bg-ink/10"></span>
+      </div>
+      <div class="mt-2 flex justify-between text-[11px] text-muted"><span>Diajukan</span><span>Diproses</span><span>Siap</span></div>
+    </div>
+
+    <!-- Vehicle tax -->
+    <div class="mock-card lg:absolute lg:left-[27%] lg:top-[0%] lg:w-[250px]" data-speed="1.15" data-rise>
+      <p class="font-bold">Bayar pajak kendaraan</p>
+      <div class="mt-3 rounded-xl bg-ink px-3 py-2 text-center font-mono text-[15px] font-bold tracking-[0.2em] text-white">B 1234 XYZ</div>
+      <div class="mt-3 flex justify-between"><span class="text-muted">PKB + SWDKLLJ</span><span class="font-semibold">Rp 2.145.000</span></div>
+      <button class="mt-3 w-full rounded-full bg-merah py-2 font-semibold text-white" tabindex="-1">Bayar</button>
+    </div>
+
+    <!-- Faskes -->
+    <div class="mock-card lg:absolute lg:left-[52%] lg:top-[6%] lg:w-[280px]" data-speed="0.8" data-rise>
+      <p class="font-bold">Pilih faskes BPJS</p>
+      <div class="mt-3 space-y-2">
+        {
+          [
+            ['Puskesmas Kebayoran Baru', true],
+            ['Klinik Pratama Sehat Bersama', false],
+            ['Puskesmas Kebayoran Lama', false],
+          ].map(([n, on]) => (
+            <label class="flex items-center justify-between rounded-xl bg-paper px-3 py-2">
+              <span>{n}</span>
+              <span class:list={['size-4 rounded-full border-2', on ? 'border-[5px] border-emerald-600' : 'border-ink/25']} />
+            </label>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div class="mock-card flex items-center justify-center lg:absolute lg:right-[2%] lg:top-[2%] lg:w-[150px]" data-speed="1.3" data-rise>
+      <span class="rounded-full bg-ink px-5 py-2 font-semibold text-white">Masuk</span>
+    </div>
+
+    <!-- Data update across agencies -->
+    <div class="mock-card lg:absolute lg:left-[8%] lg:top-[40%] lg:w-[300px]" data-speed="1.2" data-rise>
+      <p class="font-bold">Perbarui data di semua instansi</p>
+      <div class="mt-3 space-y-2">
+        {
+          ['Dukcapil', 'Imigrasi', 'BPJS Kesehatan', 'Direktorat Jenderal Pajak'].map((n) => (
+            <div class="flex items-center justify-between rounded-xl border border-line px-3 py-2">
+              <span>{n}</span>
+              <span class="grid size-4 place-items-center rounded bg-[#23408e] text-white">
+                <Icon name="check" class="size-3" />
+              </span>
+            </div>
+          ))
+        }
+      </div>
+      <div class="mt-3 text-right"><span class="rounded-full bg-[#23408e] px-4 py-1.5 font-semibold text-white">Ubah data</span></div>
+    </div>
+
+    <!-- NIB -->
+    <div class="mock-card lg:absolute lg:left-[40%] lg:top-[38%] lg:w-[260px]" data-speed="0.85" data-rise>
+      <p class="font-bold">Daftar NIB usaha</p>
+      <div class="mt-3 flex items-center gap-2 rounded-full border border-line px-3 py-2 text-muted">🔍 Kedai kopi</div>
+      <div class="mt-2 rounded-xl bg-amber-50 px-3 py-2">
+        <p class="font-semibold">KBLI 56303</p>
+        <p class="text-muted">Rumah minum / kafe</p>
+      </div>
+      <p class="mt-2 text-[11px] text-emerald-700">Gratis untuk usaha mikro & kecil</p>
+    </div>
+
+    <!-- Passport -->
+    <div class="mock-card lg:absolute lg:right-[4%] lg:top-[30%] lg:w-[260px]" data-speed="1.1" data-rise>
+      <div class="flex items-center gap-3">
+        <span class="grid h-12 w-9 place-items-center rounded-md bg-[#23408e] text-[8px] font-bold text-[#e7c873]">PASPOR</span>
+        <div>
+          <p class="font-bold">Paspor</p>
+          <p class="text-muted">Tiba sekitar 5 Nov 2026</p>
+        </div>
+      </div>
+      <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-ink/10"><div class="h-full w-2/3 rounded-full bg-[#23408e]"></div></div>
+      <div class="mt-2 flex justify-between text-[11px] text-muted"><span>Diajukan</span><span>Diproses</span></div>
+    </div>
+
+    <!-- CPNS -->
+    <div class="mock-card lg:absolute lg:left-[22%] lg:top-[74%] lg:w-[300px]" data-speed="0.95" data-rise>
+      <p class="font-bold">3 formasi paling cocok</p>
+      <div class="mt-3 space-y-2">
+        {
+          [
+            ['Pranata Komputer Ahli Pertama', 'Kementerian (contoh)', 'Jakarta'],
+            ['Analis Data', 'Badan (contoh)', 'Bandung'],
+          ].map(([role, org, loc]) => (
+            <div class="rounded-xl bg-paper px-3 py-2">
+              <p class="font-semibold">{role}</p>
+              <p class="text-muted">
+                {org} · {loc}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Drop zone -->
+    <div
+      class="mock-card flex min-h-[120px] items-center justify-center border-2 border-dashed border-[#23408e]/40 bg-[#eef2fb] text-[#23408e] shadow-none lg:absolute lg:right-[10%] lg:top-[66%] lg:w-[240px]"
+      data-speed="1.25"
+      data-rise
+    >
+      <span class="font-semibold">Tarik berkas ke sini</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap, prefersReducedMotion } from '../scripts/motion';
+
+  if (!prefersReducedMotion()) {
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 1024px)', () => {
+      // each card drifts at its own speed (yPercent, so it never fights the [data-rise] y tween)
+      document.querySelectorAll<HTMLElement>('[data-board] [data-speed]').forEach((card) => {
+        const speed = parseFloat(card.dataset.speed!);
+        gsap.fromTo(
+          card,
+          { yPercent: 70 * speed, rotate: (speed - 1) * 12 },
+          {
+            yPercent: -55 * speed,
+            rotate: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: '[data-board]', start: 'top bottom', end: 'bottom top', scrub: 1 },
+          },
+        );
+      });
+    });
+  }
+</script>

@@ -1,0 +1,11 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className = 'h-[15px] w-[22px]' } = Astro.props;
+---
+
+<span class:list={['inline-flex flex-col overflow-hidden rounded-[3px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.18)]', className]} aria-hidden="true">
+  <span class="flex-1 bg-merah"></span>
+  <span class="flex-1 bg-white"></span>
+</span>

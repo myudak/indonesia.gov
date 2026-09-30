@@ -1,0 +1,219 @@
+---
+import { orbitSites } from '../data/content';
+---
+
+<section id="orbit" class="px-4 pb-28 sm:pb-40">
+  <div class="relative mx-auto aspect-square w-full max-w-[680px]">
+    <canvas
+      class="absolute inset-0 size-full cursor-grab touch-pan-y active:cursor-grabbing"
+      data-orbit
+      data-sites={JSON.stringify(orbitSites)}
+      role="img"
+      aria-label="Bola berputar berisi pratinjau situs-situs pemerintah, menggambarkan ribuan situs yang disatukan di satu tempat."
+    ></canvas>
+  </div>
+  <div class="mx-auto -mt-6 max-w-[560px] text-center sm:-mt-10">
+    <h2 class="font-serif text-[clamp(2.4rem,5.5vw,4.2rem)] leading-[1] tracking-[-0.02em]" data-rise-lines>
+      Ribuan situs, jadi satu.
+    </h2>
+    <p class="mt-5 text-[17px] leading-relaxed text-muted" data-rise>
+      Nggak perlu lagi loncat dari satu situs ke situs lain. Indonesia.gov menyatukan layanan pemerintah di satu tempat.
+    </p>
+    <a href="#cara-kerja" class="text-link mt-6" data-rise>Lihat cara kerjanya</a>
+  </div>
+</section>
+
+<script>
+  import { gsap, ScrollTrigger, prefersReducedMotion } from '../scripts/motion';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-orbit]')!;
+  const ctx = canvas.getContext('2d')!;
+  const sites: string[] = JSON.parse(canvas.dataset.sites!);
+  const reduced = prefersReducedMotion();
+
+  const ACCENTS = ['#c8102e', '#23408e', '#0c7a4d', '#8a2c6d', '#b8860b', '#0d6070', '#3d3a9e', '#15171b'];
+  const COUNT = 150;
+
+  type Tile = { x: number; y: number; z: number; sx: number; sy: number; sz: number; accent: string; site: string; variant: number };
+
+  // Fibonacci sphere gives an even spread of tiles
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  const tiles: Tile[] = Array.from({ length: COUNT }, (_, i) => {
+    const y = 1 - (i / (COUNT - 1)) * 2;
+    const r = Math.sqrt(1 - y * y);
+    const t = golden * i;
+    return {
+      x: Math.cos(t) * r,
+      y,
+      z: Math.sin(t) * r,
+      // scattered start position for the "assemble" scroll effect
+      sx: (Math.random() - 0.5) * 4.4,
+      sy: (Math.random() - 0.5) * 3.2,
+      sz: (Math.random() - 0.5) * 2,
+      accent: ACCENTS[i % ACCENTS.length],
+      site: sites[i % sites.length],
+      variant: i % 3,
+    };
+  });
+
+  const state = { assemble: reduced ? 1 : 0, rotY: 0, rotX: -0.28, velocity: 0.0022 };
+  let width = 0;
+  let height = 0;
+  let dpr = 1;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = canvas.clientWidth;
+    height = canvas.clientHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+  }
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  function roundRect(x: number, y: number, w: number, h: number, r: number) {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+  }
+
+  const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+
+  function draw() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+
+    const R = Math.min(width, height) * 0.36;
+    const cx = width / 2;
+    const cy = height / 2;
+    const cosY = Math.cos(state.rotY), sinY = Math.sin(state.rotY);
+    const cosX = Math.cos(state.rotX), sinX = Math.sin(state.rotX);
+
+    const projected = tiles.map((t, i) => {
+      // rotate around Y then X
+      let x = t.x * cosY - t.z * sinY;
+      let z = t.x * sinY + t.z * cosY;
+      let y = t.y * cosX - z * sinX;
+      z = t.y * sinX + z * cosX;
+
+      // each tile lands with a small delay so the sphere forms in waves
+      const local = Math.min(1, Math.max(0, state.assemble * 1.6 - (i / COUNT) * 0.6));
+      const k = ease(local);
+      const facingX = Math.sqrt(Math.max(0, 1 - x * x));
+      const facingY = Math.sqrt(Math.max(0, 1 - y * y));
+      x = t.sx + (x - t.sx) * k;
+      y = t.sy + (y - t.sy) * k;
+      z = t.sz + (z - t.sz) * k;
+
+      return { t, x, y, z, k, fx: 1 + (facingX - 1) * k, fy: 1 + (facingY - 1) * k };
+    });
+
+    projected.sort((a, b) => a.z - b.z);
+
+    for (const p of projected) {
+      const depth = (p.z + 1) / 2; // 0 back → 1 front
+      const persp = 1 / (1 - p.z * 0.22);
+      const scale = (0.55 + depth * 0.45) * persp;
+      const w = Math.max(6, 68 * scale * Math.max(0.18, p.fx) * (R / 250));
+      const h = 46 * scale * Math.max(0.3, p.fy) * (R / 250);
+      const px = cx + p.x * R * persp - w / 2;
+      const py = cy + p.y * R * persp - h / 2;
+      const alpha = (0.08 + 0.92 * Math.pow(depth, 1.6)) * Math.min(1, p.k * 1.4);
+      if (alpha < 0.02) continue;
+
+      ctx.globalAlpha = alpha;
+      // card
+      roundRect(px, py, w, h, Math.min(8, w * 0.14));
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(21,23,27,0.08)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // header strip
+      ctx.save();
+      ctx.clip();
+      ctx.fillStyle = p.t.accent;
+      ctx.fillRect(px, py, w, h * 0.22);
+      ctx.restore();
+
+      if (w > 30) {
+        const lx = px + w * 0.12;
+        ctx.fillStyle = 'rgba(21,23,27,0.14)';
+        if (p.t.variant === 0) {
+          ctx.fillRect(lx, py + h * 0.62, w * 0.6, h * 0.08);
+          ctx.fillRect(lx, py + h * 0.78, w * 0.4, h * 0.08);
+        } else if (p.t.variant === 1) {
+          ctx.fillRect(lx, py + h * 0.62, w * 0.32, h * 0.22);
+          ctx.fillRect(lx + w * 0.4, py + h * 0.62, w * 0.36, h * 0.22);
+        } else {
+          ctx.beginPath();
+          ctx.arc(lx + h * 0.12, py + h * 0.72, h * 0.12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillRect(lx + h * 0.32, py + h * 0.66, w * 0.45, h * 0.1);
+        }
+        // domain label on the tiles that face the viewer
+        if (depth > 0.72 && p.fx > 0.55 && w > 48) {
+          ctx.fillStyle = 'rgba(21,23,27,0.85)';
+          ctx.font = `600 ${Math.max(7, h * 0.15)}px "Plus Jakarta Sans Variable", sans-serif`;
+          ctx.fillText(`${p.t.site}.go.id`, lx, py + h * 0.47, w * 0.8);
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---------- interaction ----------
+  let dragging = false;
+  let lastX = 0;
+  let dragVel = 0;
+  canvas.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    lastX = e.clientX;
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    dragVel = (e.clientX - lastX) * 0.005;
+    state.rotY += dragVel;
+    lastX = e.clientX;
+  });
+  const endDrag = () => (dragging = false);
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+
+  // ---------- loop, only while visible ----------
+  let visible = false;
+  const tick = () => {
+    if (!visible) return;
+    if (!dragging && !reduced) {
+      dragVel *= 0.94;
+      state.rotY += state.velocity + dragVel;
+    }
+    draw();
+  };
+  new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    if (visible) draw();
+  }).observe(canvas);
+  gsap.ticker.add(tick);
+
+  if (!reduced) {
+    // Tiles fly in from scattered positions and form the sphere as you scroll in
+    gsap.to(state, {
+      assemble: 1,
+      ease: 'none',
+      scrollTrigger: { trigger: canvas, start: 'top 95%', end: 'center 55%', scrub: 1 },
+    });
+    // Scrolling tilts the sphere a little
+    gsap.fromTo(
+      state,
+      { rotX: -0.5 },
+      { rotX: 0.2, ease: 'none', scrollTrigger: { trigger: canvas, start: 'top bottom', end: 'bottom top', scrub: 1.5 } },
+    );
+  }
+
+  document.fonts?.ready.then(() => {
+    draw();
+    ScrollTrigger.refresh();
+  });
+</script>

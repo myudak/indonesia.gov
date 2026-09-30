@@ -1,0 +1,66 @@
+---
+import Flag from './Flag.astro';
+import Icon from './Icon.astro';
+
+const links = [
+  ['Cara kerja', '#cara-kerja'],
+  ['Privasi', '#cara-kerja'],
+  ['Sumber resmi', '#cara-kerja'],
+  ['Rencana 2027', '#rencana'],
+  ['Pertanyaan umum', '#faq'],
+];
+---
+
+<div class="invisible fixed inset-0 z-50 flex flex-col bg-white px-4 py-4 sm:px-10 sm:py-7" data-menu role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="flex items-center justify-between">
+    <span class="flex items-center gap-2.5">
+      <Flag class="h-[16px] w-[24px]" />
+      <span class="font-serif text-[23px] leading-none">Indonesia.gov</span>
+    </span>
+    <button type="button" class="grid size-10 place-items-center rounded-full bg-ink text-white" data-menu-close aria-label="Tutup menu">
+      <Icon name="close" />
+    </button>
+  </div>
+  <nav class="flex flex-1 flex-col justify-center gap-1 sm:pl-[8vw]">
+    {
+      links.map(([label, href], i) => (
+        <a
+          href={href}
+          class="menu-link group flex items-baseline gap-4 overflow-hidden font-serif text-[clamp(2.6rem,8vw,6rem)] leading-[1.05] tracking-[-0.02em]"
+          data-menu-close
+        >
+          <span class="font-sans text-[13px] font-semibold text-muted">0{i + 1}</span>
+          <span class="inline-block transition-transform duration-500 ease-out-expo group-hover:translate-x-3 group-hover:text-merah">{label}</span>
+        </a>
+      ))
+    }
+  </nav>
+  <p class="text-[12px] text-muted">Konsep desain portofolio · bukan situs resmi pemerintah</p>
+</div>
+
+<script>
+  import { gsap, getLenis, prefersReducedMotion } from '../scripts/motion';
+
+  const menu = document.querySelector<HTMLElement>('[data-menu]')!;
+  const links = menu.querySelectorAll('.menu-link > span:last-child');
+  const reduced = prefersReducedMotion();
+
+  const tl = gsap
+    .timeline({ paused: true, defaults: { duration: reduced ? 0 : 1 } })
+    .set(menu, { autoAlpha: 1 })
+    .fromTo(menu, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'expo.inOut' })
+    .fromTo(links, { yPercent: 110 }, { yPercent: 0, stagger: 0.06 }, reduced ? 0 : 0.45);
+
+  document.querySelectorAll('[data-menu-open]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      getLenis()?.stop();
+      tl.timeScale(1).play();
+    }),
+  );
+  menu.querySelectorAll('[data-menu-close]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      getLenis()?.start();
+      tl.timeScale(1.8).reverse();
+    }),
+  );
+</script>

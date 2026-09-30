@@ -1,0 +1,325 @@
+---
+import Flag from './Flag.astro';
+import Icon from './Icon.astro';
+import Doc from './Doc.astro';
+import { examples } from '../data/content';
+---
+
+<section id="hero" class="px-2 sm:px-4">
+  <div
+    class="relative mx-auto max-w-[1440px] overflow-hidden rounded-[28px] bg-[radial-gradient(120%_80%_at_50%_0%,#ffffff_0%,#f4f3f0_55%,#eeece8_100%)] pb-14 sm:rounded-[44px] sm:pb-20"
+  >
+    <header class="relative z-10 flex items-center justify-between px-4 pt-4 sm:px-10 sm:pt-7" data-reveal data-hero-nav>
+      <a href="/" class="flex items-center gap-2.5" aria-label="Indonesia.gov, beranda">
+        <Flag class="h-[16px] w-[24px]" />
+        <span class="font-serif text-[23px] leading-none tracking-[-0.01em]">Indonesia.gov</span>
+      </a>
+      <button
+        type="button"
+        data-menu-open
+        class="rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-merah active:scale-95"
+      >
+        Menu
+      </button>
+    </header>
+
+    <div class="px-4 pt-14 text-center sm:pt-24">
+      <h1 class="font-serif text-[clamp(3.2rem,9vw,7rem)] leading-[0.95] tracking-[-0.02em]" data-reveal data-hero-title>
+        Halo, Indonesia
+      </h1>
+      <p class="mx-auto mt-5 max-w-[34ch] text-[17px] text-muted sm:max-w-none sm:text-xl" data-reveal data-hero-sub>
+        Apa pun yang kamu butuhkan dari pemerintah, mulai di sini.
+      </p>
+    </div>
+
+    <div class="relative mx-auto mt-10 max-w-[780px] px-4 sm:mt-14">
+      <form class="pill-input relative z-20 h-16 sm:h-[72px]" data-reveal data-hero-search data-ask-form>
+        <label for="hero-q" class="sr-only">Jelaskan apa yang kamu butuhkan</label>
+        <input
+          id="hero-q"
+          name="q"
+          autocomplete="off"
+          class="peer h-full min-w-0 flex-1 bg-transparent text-[16px] outline-none sm:text-[17px]"
+        />
+        <span
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-y-0 left-6 right-36 flex items-center truncate text-[16px] text-ink/55 peer-focus:opacity-0 peer-[:not(:placeholder-shown)]:opacity-0 sm:text-[17px]"
+          data-typer
+        ></span>
+        <button type="button" class="icon-btn hidden sm:grid" aria-label="Lampirkan berkas"><Icon name="clip" /></button>
+        <button type="button" class="icon-btn" aria-label="Bicara"><Icon name="mic" /></button>
+        <button type="submit" class="send-btn" aria-label="Kirim pertanyaan"><Icon name="arrow" /></button>
+      </form>
+
+      <div
+        class="relative z-10 -mt-8 aspect-[4/5] overflow-hidden rounded-[28px] bg-white shadow-[0_40px_80px_-30px_rgba(21,23,27,0.35)] sm:aspect-[16/11] sm:rounded-[36px]"
+        data-reveal
+        data-hero-stage
+        aria-roledescription="carousel"
+        aria-label="Contoh pertanyaan"
+      >
+        {
+          examples.map((ex, i) => (
+            <article
+              class="scene absolute inset-0"
+              style={`background: linear-gradient(160deg, ${ex.tint[0]} 0%, ${ex.tint[1]} 100%)`}
+              data-question={ex.question}
+              aria-roledescription="slide"
+              aria-label={`Contoh ${i + 1} dari ${examples.length}: ${ex.question}`}
+            >
+              <span class="scene-tag pointer-events-none absolute -bottom-[0.18em] left-4 select-none font-serif text-[clamp(5rem,18vw,11rem)] leading-none text-white/45 sm:left-8">
+                {ex.tag}
+              </span>
+              <div class="doc absolute left-[12%] top-[14%] w-[52%] -rotate-[7deg] sm:left-[7%] sm:top-[22%] sm:w-[34%]">
+                <Doc type={ex.doc} accent={ex.accent} label={ex.tag} />
+              </div>
+              <div class="answer absolute inset-x-3 bottom-3 rounded-[22px] bg-white/95 p-4 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.35)] backdrop-blur sm:inset-x-auto sm:bottom-auto sm:right-[6%] sm:top-[20%] sm:w-[46%] sm:p-5">
+                <p class="inline-flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 text-[11px] font-semibold text-ink/70">
+                  <Icon name="spark" class="size-3 text-merah" /> Jawaban singkat
+                </p>
+                <h3 class="mt-3 text-[15px] font-bold leading-snug sm:text-[17px]">{ex.title}</h3>
+                <ol class="mt-3 space-y-2">
+                  {ex.steps.map((s, n) => (
+                    <li class="flex gap-2.5 text-[13px] leading-snug text-ink/75">
+                      <span class="grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold text-white" style={`background:${ex.accent}`}>
+                        {n + 1}
+                      </span>
+                      {s}
+                    </li>
+                  ))}
+                </ol>
+                <p class="mt-4 flex items-center gap-1.5 border-t border-line pt-3 text-[11px] text-muted">
+                  <Icon name="check" class="size-3.5 text-emerald-600" /> Sumber resmi · {ex.source}
+                </p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="mt-7 flex justify-center gap-3" data-reveal data-hero-controls>
+        <button type="button" class="ctrl" data-prev aria-label="Contoh sebelumnya"><Icon name="prev" /></button>
+        <button type="button" class="ctrl relative" data-toggle aria-label="Jeda">
+          <svg class="absolute inset-0 -rotate-90" viewBox="0 0 44 44" aria-hidden="true">
+            <circle cx="22" cy="22" r="20.5" fill="none" stroke="currentColor" stroke-opacity=".08" stroke-width="2" />
+            <circle cx="22" cy="22" r="20.5" fill="none" stroke="#c8102e" stroke-width="2" stroke-linecap="round" data-ring />
+          </svg>
+          <span data-icon-pause><Icon name="pause" class="size-4" /></span>
+          <span data-icon-play class="hidden"><Icon name="play" class="size-4" /></span>
+        </button>
+        <button type="button" class="ctrl" data-next aria-label="Contoh berikutnya"><Icon name="next" /></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ctrl {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    background: #fff;
+    color: var(--color-ink);
+    box-shadow:
+      0 10px 24px -12px rgba(21, 23, 27, 0.35),
+      0 0 0 1px rgba(21, 23, 27, 0.06);
+    transition: transform 0.3s var(--ease-out-expo);
+  }
+  .ctrl:hover {
+    transform: translateY(-2px);
+  }
+  .ctrl:active {
+    transform: scale(0.94);
+  }
+</style>
+
+<script>
+  import { gsap, SplitText, prefersReducedMotion, showAll } from '../scripts/motion';
+
+  const root = document.getElementById('hero')!;
+  const stage = root.querySelector<HTMLElement>('[data-hero-stage]')!;
+  const scenes = [...stage.querySelectorAll<HTMLElement>('.scene')];
+  const typer = root.querySelector<HTMLElement>('[data-typer]')!;
+  const ring = root.querySelector<SVGCircleElement>('[data-ring]')!;
+  const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
+  const input = root.querySelector<HTMLInputElement>('#hero-q')!;
+  const reduced = prefersReducedMotion();
+
+  input.placeholder = ' '; // lets the typer overlay hide via :placeholder-shown
+  const SLIDE_SECONDS = 6;
+  const circumference = 2 * Math.PI * 20.5;
+  ring.style.strokeDasharray = `${circumference}`;
+
+  let index = 0;
+  let playing = !reduced;
+  let sceneTl: gsap.core.Timeline | null = null;
+  let typeTween: gsap.core.Tween | null = null;
+  let progress: gsap.core.Tween | null = null;
+
+  // ---------- typewriter placeholder ----------
+  function typePrompt(text: string) {
+    typeTween?.kill();
+    const full = `Coba ‘${text}’`;
+    if (reduced) {
+      typer.textContent = full;
+      return;
+    }
+    const state = { n: 0 };
+    typeTween = gsap.to(state, {
+      n: full.length,
+      duration: full.length * 0.028,
+      ease: 'none',
+      onUpdate: () => {
+        typer.innerHTML = `${full.slice(0, Math.round(state.n))}<span class="caret">|</span>`;
+      },
+    });
+  }
+
+  // ---------- autoplay ring ----------
+  function startProgress() {
+    progress?.kill();
+    gsap.set(ring, { strokeDashoffset: circumference });
+    if (!playing) return;
+    progress = gsap.to(ring, {
+      strokeDashoffset: 0,
+      duration: SLIDE_SECONDS,
+      ease: 'none',
+      onComplete: () => go(index + 1, 1),
+    });
+  }
+
+  function setPlaying(next: boolean) {
+    playing = next;
+    toggle.setAttribute('aria-label', playing ? 'Jeda' : 'Putar');
+    root.querySelector('[data-icon-pause]')!.classList.toggle('hidden', !playing);
+    root.querySelector('[data-icon-play]')!.classList.toggle('hidden', playing);
+    if (playing) {
+      if (progress && progress.progress() < 1) progress.resume();
+      else startProgress();
+    } else progress?.pause();
+  }
+
+  // ---------- scene transitions ----------
+  function go(target: number, dir: 1 | -1) {
+    const prev = scenes[index];
+    index = (target + scenes.length) % scenes.length;
+    const next = scenes[index];
+    sceneTl?.progress(1);
+    typePrompt(next.dataset.question!);
+    startProgress();
+
+    if (reduced) {
+      gsap.set(scenes, { autoAlpha: 0 });
+      gsap.set(next, { autoAlpha: 1 });
+      return;
+    }
+
+    const doc = next.querySelector('.doc');
+    const answerBits = next.querySelectorAll('.answer, .answer > *');
+    const tag = next.querySelector('.scene-tag');
+
+    sceneTl = gsap
+      .timeline()
+      .set(next, { zIndex: 2 })
+      .set(prev, { zIndex: 1 })
+      .fromTo(
+        next,
+        { autoAlpha: 1, clipPath: dir > 0 ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)' },
+        { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'expo.inOut' },
+      )
+      .to(prev, { xPercent: -12 * dir, duration: 1.1, ease: 'expo.inOut' }, 0)
+      .fromTo(tag, { yPercent: 60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 1.2 }, 0.45)
+      .fromTo(
+        doc,
+        { y: 60, rotate: -7 + 10 * dir, autoAlpha: 0 },
+        { y: 0, rotate: -7, autoAlpha: 1, duration: 1.4, ease: 'elastic.out(1, 0.75)' },
+        0.5,
+      )
+      .fromTo(
+        answerBits,
+        { y: 18, autoAlpha: 0, filter: 'blur(8px)' },
+        { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.9, stagger: 0.05 },
+        0.65,
+      )
+      .set(prev, { autoAlpha: 0, xPercent: 0, zIndex: 0 });
+  }
+
+  // ---------- intro ----------
+  gsap.set(scenes, { autoAlpha: 0 });
+  gsap.set(scenes[0], { autoAlpha: 1 });
+
+  if (reduced) {
+    showAll(root);
+    typePrompt(scenes[0].dataset.question!);
+    setPlaying(false);
+  } else {
+    const split = SplitText.create('[data-hero-title]', { type: 'words,chars', wordsClass: 'inline-block', charsClass: 'inline-block' });
+    gsap.set('[data-hero-title]', { autoAlpha: 1 });
+    const intro = gsap.timeline({ delay: 0.15 });
+    intro
+      .fromTo(
+        split.chars,
+        { yPercent: 70, autoAlpha: 0, filter: 'blur(14px)' },
+        { yPercent: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 1.3, stagger: 0.035 },
+      )
+      .fromTo('[data-hero-nav]', { y: -12, autoAlpha: 0 }, { y: 0, autoAlpha: 1 }, 0.2)
+      .fromTo('[data-hero-sub]', { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1 }, 0.5)
+      .fromTo(
+        '[data-hero-search]',
+        { y: 24, scale: 0.94, autoAlpha: 0 },
+        { y: 0, scale: 1, autoAlpha: 1, duration: 1.2 },
+        0.65,
+      )
+      .fromTo(
+        stage,
+        { y: 80, autoAlpha: 0, clipPath: 'inset(12% 6% 0% 6% round 36px)' },
+        { y: 0, autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0% round 36px)', duration: 1.6 },
+        0.8,
+      )
+      .fromTo('[data-hero-controls] > *', { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.07 }, 1.3)
+      .add(() => {
+        typePrompt(scenes[0].dataset.question!);
+        startProgress();
+      }, 1.0);
+    gsap.set('[data-hero-controls]', { autoAlpha: 1 });
+
+    // subtle parallax on the floating document following the pointer
+    stage.addEventListener('pointermove', (e) => {
+      const r = stage.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      gsap.to(scenes[index].querySelector('.doc'), { x: x * 24, y: y * 18, duration: 1.2, overwrite: 'auto' });
+      gsap.to(scenes[index].querySelector('.answer'), { x: x * -12, y: y * -10, duration: 1.2, overwrite: 'auto' });
+    });
+  }
+
+  root.querySelector('[data-prev]')!.addEventListener('click', () => go(index - 1, -1));
+  root.querySelector('[data-next]')!.addEventListener('click', () => go(index + 1, 1));
+  toggle.addEventListener('click', () => setPlaying(!playing));
+
+  // Pause autoplay while the user is typing their own question
+  input.addEventListener('focus', () => playing && setPlaying(false));
+
+  // Empty submit asks the example currently on screen
+  root.querySelector<HTMLFormElement>('[data-ask-form]')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value.trim() || scenes[index].dataset.question!;
+    input.value = '';
+    window.dispatchEvent(new CustomEvent('ask', { detail: q }));
+  });
+</script>
+
+<style is:global>
+  .caret {
+    margin-left: 1px;
+    animation: blink 1s steps(1) infinite;
+    color: var(--color-merah);
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+</style>

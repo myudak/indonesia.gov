@@ -1,0 +1,36 @@
+---
+import Flag from './Flag.astro';
+import Icon from './Icon.astro';
+
+const links = ['Cara kerja', 'Privasi', 'Tentang', 'Pertanyaan umum'];
+---
+
+<footer id="faq" class="px-4 pb-32 pt-28 sm:pb-36 sm:pt-36">
+  <nav class="flex flex-col items-center gap-1" aria-label="Tautan bawah">
+    {
+      links.map((l) => (
+        <a
+          href="#"
+          class="group relative font-serif text-[clamp(2.4rem,6vw,4.6rem)] leading-[1.08] tracking-[-0.02em]"
+          data-rise
+        >
+          {l}
+          <span class="absolute -bottom-1 left-0 h-[2px] w-full origin-right scale-x-0 bg-merah transition-transform duration-700 ease-out-expo group-hover:origin-left group-hover:scale-x-100" />
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="mx-auto mt-24 flex max-w-[1100px] flex-col items-center justify-between gap-6 border-t border-line pt-8 text-[13px] text-muted sm:flex-row">
+    <div class="flex items-center gap-2.5 text-ink">
+      <Flag class="h-[13px] w-[20px]" />
+      <span class="font-serif text-[19px] leading-none">Indonesia.gov</span>
+    </div>
+    <p class="max-w-[52ch] text-center sm:text-left">
+      Konsep desain untuk portofolio, terinspirasi dari America.gov. Tidak berafiliasi dengan Pemerintah Republik Indonesia.
+    </p>
+    <button type="button" class="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-ink">
+      <Icon name="globe" class="size-4" /> Bahasa Indonesia
+    </button>
+  </div>
+</footer>

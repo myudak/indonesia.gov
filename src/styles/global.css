@@ -1,0 +1,118 @@
+@import "tailwindcss";
+@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  --color-ink: #15171b;
+  --color-muted: #6a6f78;
+  --color-line: #e7e5e1;
+  --color-paper: #f4f3f0;
+  --color-merah: #c8102e;
+  --color-merah-deep: #6e0a1a;
+  --color-putih: #fbfaf8;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  ::selection {
+    background: var(--color-merah);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-merah);
+    outline-offset: 3px;
+  }
+}
+
+/* Elements that GSAP reveals start hidden only when JS is running,
+   so the page is still fully readable without it. */
+.js [data-reveal],
+.js [data-rise],
+.js [data-rise-lines] {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal],
+  .js [data-rise],
+  .js [data-rise-lines] {
+    visibility: visible;
+  }
+}
+
+@layer components {
+  .pill-input {
+    @apply relative flex items-center gap-2 rounded-full border border-ink/80 bg-white pl-6 pr-2 shadow-[0_18px_50px_-18px_rgba(21,23,27,0.35)];
+  }
+  .icon-btn {
+    @apply grid size-10 shrink-0 place-items-center rounded-full text-ink/80 transition hover:bg-ink/5 hover:text-ink;
+  }
+  .send-btn {
+    @apply grid size-10 shrink-0 place-items-center rounded-full bg-merah text-white transition hover:bg-merah-deep active:scale-95;
+  }
+  .text-link {
+    @apply relative inline-block text-sm font-semibold text-ink after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-right after:scale-x-0 after:bg-current after:transition-transform after:duration-500 after:ease-out-expo hover:after:origin-left hover:after:scale-x-100;
+  }
+  .mock-card {
+    @apply rounded-[22px] bg-white p-4 text-[12px] shadow-[0_24px_60px_-24px_rgba(21,23,27,0.28),0_0_0_1px_rgba(21,23,27,0.05)];
+  }
+}
+
+/* Chat message entrance, same "rise + sharpen" idea as the original */
+@keyframes msg-rise {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    transform: none;
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+.msg-in {
+  animation: msg-rise 0.6s var(--ease-out-expo) both;
+}
+
+@keyframes dot-pulse {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.typing-dot {
+  animation: dot-pulse 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

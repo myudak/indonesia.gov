@@ -1,0 +1,201 @@
+---
+import Icon from './Icon.astro';
+import Flag from './Flag.astro';
+import { examples } from '../data/content';
+---
+
+<div class="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-4 sm:pb-6" data-dock-root>
+  <!-- Conversation panel -->
+  <section
+    class="pointer-events-auto invisible mx-auto mb-3 flex max-h-[min(640px,72vh)] max-w-[760px] flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_40px_100px_-30px_rgba(21,23,27,0.45),0_0_0_1px_rgba(21,23,27,0.06)]"
+    data-panel
+    aria-label="Percakapan"
+    role="dialog"
+  >
+    <header class="flex items-center justify-between border-b border-line px-5 py-3.5">
+      <div class="flex items-center gap-2.5">
+        <Flag class="h-[12px] w-[18px]" />
+        <span class="font-serif text-[19px] leading-none">Indonesia.gov</span>
+        <span class="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Demo UI · jawaban contoh</span>
+      </div>
+      <button type="button" class="icon-btn size-9" data-close aria-label="Tutup percakapan"><Icon name="close" /></button>
+    </header>
+    <div class="flex-1 space-y-4 overflow-y-auto px-5 py-5" data-messages data-lenis-prevent aria-live="polite"></div>
+  </section>
+
+  <!-- Sticky ask bar -->
+  <form class="pill-input pointer-events-auto mx-auto h-14 max-w-[760px] sm:h-16" style="transform: translateY(160%)" data-dock data-ask-dock>
+    <label for="dock-q" class="sr-only">Tanya apa saja</label>
+    <input id="dock-q" name="q" autocomplete="off" placeholder="Tanya apa saja…" class="h-full min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink/50" />
+    <button type="button" class="icon-btn hidden sm:grid" aria-label="Lampirkan berkas"><Icon name="clip" /></button>
+    <button type="button" class="icon-btn" aria-label="Bicara"><Icon name="mic" /></button>
+    <button type="submit" class="send-btn size-9" aria-label="Kirim"><Icon name="arrow" /></button>
+  </form>
+
+  <script is:inline type="application/json" data-answers set:html={JSON.stringify(examples)} />
+</div>
+
+<script>
+  import { gsap, ScrollTrigger, getLenis, prefersReducedMotion } from '../scripts/motion';
+  import type { Example } from '../data/content';
+
+  const root = document.querySelector<HTMLElement>('[data-dock-root]')!;
+  const dock = root.querySelector<HTMLFormElement>('[data-dock]')!;
+  const panel = root.querySelector<HTMLElement>('[data-panel]')!;
+  const list = root.querySelector<HTMLElement>('[data-messages]')!;
+  const input = root.querySelector<HTMLInputElement>('#dock-q')!;
+  const answers: Example[] = JSON.parse(root.querySelector('[data-answers]')!.textContent!);
+  const reduced = prefersReducedMotion();
+
+  // keyword → example tag; order matters ("pajak motor" should hit Samsat before SPT)
+  const rules: [RegExp, string][] = [
+    [/motor|mobil|kendaraan|pkb|samsat|stnk/i, 'Samsat'],
+    [/\bsim\b|surat izin mengemudi/i, 'SIM'],
+    [/paspor|passport|imigrasi/i, 'Paspor'],
+    [/bpjs|jkn|faskes|kesehatan/i, 'BPJS'],
+    [/\bkk\b|kartu keluarga|nikah|ktp|dukcapil|akta/i, 'Dukcapil'],
+    [/\bnib\b|usaha|umkm|\boss\b|izin usaha/i, 'Usaha'],
+    [/spt|pajak|npwp/i, 'Pajak'],
+    [/cpns|pns|asn|lowongan|kerja/i, 'Kerja'],
+  ];
+
+  let panelOpen = false;
+  let dockShown = false;
+
+  // ---------- show the dock once the hero search scrolls away ----------
+  function showDock(show: boolean) {
+    if (show === dockShown || (!show && panelOpen)) return;
+    dockShown = show;
+    gsap.to(dock, { yPercent: show ? 0 : 160, y: 0, duration: reduced ? 0 : 0.9, ease: show ? 'expo.out' : 'expo.in' });
+  }
+  gsap.set(dock, { y: 0, yPercent: 160 });
+  ScrollTrigger.create({
+    trigger: '[data-hero-search]',
+    start: 'bottom top',
+    onEnter: () => showDock(true),
+    onLeaveBack: () => showDock(false),
+  });
+
+  // ---------- panel ----------
+  function openPanel() {
+    if (panelOpen) return;
+    panelOpen = true;
+    showDock(true);
+    getLenis()?.stop();
+    gsap.fromTo(
+      panel,
+      { autoAlpha: 0, y: 40, scale: 0.96, transformOrigin: '50% 100%' },
+      { autoAlpha: 1, y: 0, scale: 1, duration: reduced ? 0 : 0.8 },
+    );
+  }
+  function closePanel() {
+    if (!panelOpen) return;
+    panelOpen = false;
+    getLenis()?.start();
+    gsap.to(panel, { autoAlpha: 0, y: 30, scale: 0.97, duration: reduced ? 0 : 0.45, ease: 'power3.in' });
+    if (window.scrollY < window.innerHeight * 0.6) showDock(false);
+  }
+  root.querySelector('[data-close]')!.addEventListener('click', closePanel);
+  window.addEventListener('keydown', (e) => e.key === 'Escape' && closePanel());
+
+  // ---------- messages ----------
+  const scrollDown = () => list.scrollTo({ top: list.scrollHeight, behavior: reduced ? 'auto' : 'smooth' });
+
+  function addUser(text: string) {
+    const row = document.createElement('div');
+    row.className = 'msg-in flex justify-end';
+    const bubble = document.createElement('p');
+    bubble.className = 'max-w-[80%] rounded-[20px] rounded-br-md bg-ink px-4 py-2.5 text-[14px] text-white';
+    bubble.textContent = text;
+    row.append(bubble);
+    list.append(row);
+    scrollDown();
+  }
+
+  function addTyping() {
+    const row = document.createElement('div');
+    row.className = 'msg-in flex gap-1.5 px-1 py-2';
+    row.innerHTML = '<span class="typing-dot size-2 rounded-full bg-ink/60"></span>'.repeat(3);
+    list.append(row);
+    scrollDown();
+    return row;
+  }
+
+  function escapeHtml(s: string) {
+    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  }
+
+  function addAnswer(question: string) {
+    const tag = rules.find(([re]) => re.test(question))?.[1];
+    const ex = answers.find((a) => a.tag === tag);
+    const row = document.createElement('div');
+    row.className = 'msg-in max-w-[92%]';
+
+    if (ex) {
+      row.innerHTML = `
+        <p class="stream text-[15px] leading-relaxed">${escapeHtml(`Oke, ini ringkasan untuk “${ex.title}”:`)}</p>
+        <ol class="mt-3 space-y-2">
+          ${ex.steps
+            .map(
+              (s, i) => `<li class="flex gap-2.5 text-[14px] leading-snug">
+                <span class="grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold text-white" style="background:${ex.accent}">${i + 1}</span>
+                <span class="stream">${escapeHtml(s)}</span></li>`,
+            )
+            .join('')}
+        </ol>
+        <p class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[12px] font-medium text-emerald-700">
+          ✓ Sumber resmi · ${escapeHtml(ex.source)}
+        </p>`;
+    } else {
+      row.innerHTML = `<p class="stream text-[15px] leading-relaxed">Ini masih demo UI, jadi jawabannya contoh saja. Coba tanya soal SIM, paspor, BPJS, KK, NIB, pajak, atau CPNS.</p>`;
+    }
+    list.append(row);
+
+    // "stream" the words in like a live response
+    if (!reduced) {
+      const words: HTMLElement[] = [];
+      row.querySelectorAll<HTMLElement>('.stream').forEach((el) => {
+        el.innerHTML = el.textContent!
+          .split(' ')
+          .map((w) => `<span class="inline-block opacity-0">${escapeHtml(w)}&nbsp;</span>`)
+          .join('');
+        words.push(...el.querySelectorAll<HTMLElement>('span'));
+      });
+      gsap.to(words, { opacity: 1, duration: 0.3, stagger: 0.025, ease: 'none', onUpdate: scrollDown });
+      gsap.from(row.querySelectorAll('li > span:first-child, p:last-child'), {
+        scale: 0,
+        duration: 0.6,
+        stagger: 0.12,
+        delay: 0.3,
+        ease: 'back.out(2)',
+      });
+    }
+    scrollDown();
+  }
+
+  let busy = false;
+  function ask(question: string) {
+    if (!question || busy) return;
+    busy = true;
+    openPanel();
+    addUser(question);
+    const typing = addTyping();
+    setTimeout(() => {
+      typing.remove();
+      addAnswer(question);
+      busy = false;
+    }, reduced ? 200 : 1100);
+  }
+
+  dock.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    input.value = '';
+    ask(q);
+  });
+  window.addEventListener('ask', (e) => ask((e as CustomEvent<string>).detail));
+  window.addEventListener('ask-focus', () => {
+    showDock(true);
+    input.focus();
+  });
+</script>

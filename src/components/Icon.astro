@@ -1,0 +1,34 @@
+---
+interface Props {
+  name: 'clip' | 'mic' | 'arrow' | 'prev' | 'next' | 'play' | 'pause' | 'close' | 'check' | 'spark' | 'lock' | 'globe';
+  class?: string;
+}
+const { name, class: className = 'size-[18px]' } = Astro.props;
+
+const paths: Record<Props['name'], string> = {
+  clip: '<path d="M16.5 6.5 8.6 14.4a2 2 0 0 0 2.8 2.8l7.4-7.4a4 4 0 0 0-5.6-5.6L5.7 11.7a6 6 0 0 0 8.5 8.5l6.3-6.3"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  prev: '<path d="m14.5 6-6 6 6 6"/>',
+  next: '<path d="m9.5 6 6 6-6 6"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/>',
+  pause: '<path d="M8.5 5.5v13M15.5 5.5v13" stroke-width="3"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  spark: '<path d="M12 3.5c.6 4.6 3.9 7.9 8.5 8.5-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5 4.6-.6 7.9-3.9 8.5-8.5Z" fill="currentColor" stroke="none"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
+  globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.4 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.4-3.5-8.5s1-5.9 3.5-8.5Z"/>',
+};
+---
+
+<svg
+  class={className}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={paths[name]}
+/>

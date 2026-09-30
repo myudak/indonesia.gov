@@ -1,0 +1,174 @@
+---
+import Icon from './Icon.astro';
+
+const sources = [
+  'dukcapil.kemendagri.go.id',
+  'imigrasi.go.id',
+  'pajak.go.id',
+  'bpjs-kesehatan.go.id',
+  'oss.go.id',
+  'korlantas.polri.go.id',
+  'kemenkes.go.id',
+  'jakarta.go.id',
+];
+
+// deterministic star field for the privacy card
+const stars = Array.from({ length: 70 }, (_, i) => ({
+  x: (i * 37.7) % 100,
+  y: (i * 61.3) % 100,
+  s: 1 + ((i * 13) % 3) * 0.6,
+  d: ((i * 7) % 30) / 10,
+}));
+---
+
+<section id="cara-kerja" class="space-y-28 px-4 pb-32 sm:space-y-40 sm:pb-44">
+  <!-- Privacy -->
+  <article class="feature mx-auto max-w-[420px]" data-feature="privacy">
+    <div
+      class="relative aspect-[5/6] overflow-hidden rounded-[32px] bg-[linear-gradient(180deg,#0d0a0c_0%,#2a0b12_55%,#6e0a1a_100%)]"
+      data-rise
+    >
+      {
+        stars.map((s) => (
+          <span
+            class="absolute rounded-full bg-white"
+            style={`left:${s.x}%;top:${s.y}%;width:${s.s}px;height:${s.s}px;animation:twinkle 3s ${s.d}s infinite ease-in-out`}
+          />
+        ))
+      }
+      <div class="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(60%_60%_at_50%_100%,rgba(200,16,46,0.55),transparent)]"></div>
+      <div class="absolute left-1/2 top-1/2 grid size-28 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/90 shadow-[0_0_80px_rgba(255,255,255,0.35)] backdrop-blur" data-lock>
+        <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="#15171b" stroke-width="1.9" stroke-linecap="round">
+          <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#15171b"></rect>
+          <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" data-shackle></path>
+          <circle cx="12" cy="15.5" r="1.3" fill="#fff" stroke="none"></circle>
+        </svg>
+      </div>
+    </div>
+    <h3 class="mt-9 text-[28px] font-semibold leading-[1.15] tracking-[-0.02em]" data-rise>
+      Indonesia.gov menjaga datamu tetap privat.
+    </h3>
+    <p class="mt-4 max-w-[34ch] text-[16px] leading-relaxed text-muted" data-rise>
+      Data pribadimu tidak dikumpulkan atau disimpan, dan percakapanmu hilang begitu kamu pergi.
+    </p>
+    <a href="#privasi" class="text-link mt-6" data-rise>Tentang privasi</a>
+  </article>
+
+  <!-- Official sources -->
+  <article class="feature mx-auto max-w-[420px]" data-feature="sources">
+    <div class="relative aspect-[5/6] overflow-hidden rounded-[32px] bg-paper" data-rise>
+      <div
+        class="absolute inset-0 opacity-70 [background-image:radial-gradient(circle_at_center,#fff_0_38%,transparent_39%)] [background-size:96px_96px]"
+      ></div>
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-2.5 p-6">
+        {
+          sources.map((s, i) => (
+            <span
+              class="source-chip inline-flex items-center gap-2 rounded-full bg-white py-2 pl-2 pr-4 text-[13px] font-semibold shadow-[0_12px_30px_-14px_rgba(21,23,27,0.35)]"
+              style={`margin-left:${(i % 3) * 28 - 28}px`}
+            >
+              <span class="grid size-6 place-items-center rounded-full bg-emerald-50 text-emerald-600">
+                <Icon name="check" class="size-3.5" />
+              </span>
+              {s}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+    <h3 class="mt-9 text-[28px] font-semibold leading-[1.15] tracking-[-0.02em]" data-rise>
+      Jawaban jelas.<br />Sumber resmi.
+    </h3>
+    <p class="mt-4 max-w-[34ch] text-[16px] leading-relaxed text-muted" data-rise>
+      Setiap jawaban hanya diambil dari situs resmi pemerintah pusat dan daerah.
+    </p>
+    <a href="#sumber" class="text-link mt-6" data-rise>Tentang sumber</a>
+  </article>
+
+  <!-- No app -->
+  <article class="feature mx-auto max-w-[420px]" data-feature="noapp">
+    <div class="relative aspect-[5/6] overflow-hidden rounded-[32px] bg-[linear-gradient(180deg,#f4f3f0,#e9e7e2)]" data-rise>
+      <div class="absolute inset-x-8 bottom-0 top-12 rounded-t-[36px] bg-white p-3 shadow-[0_30px_60px_-20px_rgba(21,23,27,0.3)]" data-phone>
+        <div class="mx-auto h-5 w-24 rounded-full bg-ink"></div>
+        <div class="mt-4 flex items-center gap-2 rounded-full bg-paper px-4 py-2.5 text-[13px]">
+          <Icon name="lock" class="size-3.5 text-emerald-600" />
+          <span data-url class="font-medium"></span><span class="caret">|</span>
+        </div>
+        <div class="mt-6 space-y-3 px-2" data-phone-page>
+          <p class="text-center font-serif text-[30px] leading-none">Halo, Indonesia</p>
+          <div class="mx-auto h-2 w-3/4 rounded-full bg-ink/10"></div>
+          <div class="mt-4 flex h-11 items-center justify-between rounded-full border border-ink/70 pl-4 pr-1.5 text-[12px] text-ink/50">
+            Tanya apa saja…
+            <span class="grid size-8 place-items-center rounded-full bg-merah text-white"><Icon name="arrow" class="size-3.5" /></span>
+          </div>
+          <div class="h-24 rounded-2xl bg-[linear-gradient(160deg,#f6d9c4,#e98b6d)]"></div>
+        </div>
+      </div>
+      <div class="absolute right-5 top-5 rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-muted shadow" data-badge>
+        0 aplikasi baru 🎉
+      </div>
+    </div>
+    <h3 class="mt-9 text-[28px] font-semibold leading-[1.15] tracking-[-0.02em]" data-rise>Tanpa perlu unduh aplikasi.</h3>
+    <p class="mt-4 max-w-[34ch] text-[16px] leading-relaxed text-muted" data-rise>
+      Cukup buka Indonesia.gov di browser HP, tablet, atau komputermu. Nggak nambah deretan aplikasi di HP-mu.
+    </p>
+    <button type="button" class="text-link mt-6" data-focus-dock data-rise>Ajukan pertanyaan</button>
+  </article>
+</section>
+
+<script>
+  import { gsap, prefersReducedMotion } from '../scripts/motion';
+
+  const reduced = prefersReducedMotion();
+  const urlEl = document.querySelector<HTMLElement>('[data-url]')!;
+
+  if (reduced) {
+    urlEl.textContent = 'indonesia.gov';
+  } else {
+    // Privacy: the padlock snaps shut when the card scrolls in
+    const lock = document.querySelector('[data-feature="privacy"] [data-lock]');
+    gsap
+      .timeline({ scrollTrigger: { trigger: lock, start: 'top 75%', toggleActions: 'play none none reverse' } })
+      .fromTo(lock, { scale: 0.6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 1, ease: 'back.out(1.8)' })
+      .fromTo('[data-shackle]', { y: -3.5 }, { y: 0, duration: 0.35, ease: 'power3.in' }, 0.7)
+      .to(lock, { scale: 0.92, duration: 0.12, yoyo: true, repeat: 1, ease: 'power2.out' }, 1.05);
+
+    // Sources: chips slide in one after another
+    gsap.fromTo(
+      '.source-chip',
+      { x: (i) => (i % 2 ? 60 : -60), autoAlpha: 0, scale: 0.9 },
+      {
+        x: 0,
+        autoAlpha: 1,
+        scale: 1,
+        duration: 1,
+        stagger: 0.08,
+        scrollTrigger: { trigger: '[data-feature="sources"]', start: 'top 70%', toggleActions: 'play none none reverse' },
+      },
+    );
+
+    // No app: the phone rises, the URL types itself, then the page appears
+    const url = 'indonesia.gov';
+    const typed = { n: 0 };
+    gsap
+      .timeline({ scrollTrigger: { trigger: '[data-feature="noapp"]', start: 'top 70%', toggleActions: 'play none none reverse' } })
+      .fromTo('[data-phone]', { yPercent: 40 }, { yPercent: 0, duration: 1.3 })
+      .fromTo(
+        typed,
+        { n: 0 },
+        { n: url.length, duration: 0.8, ease: 'none', onUpdate: () => (urlEl.textContent = url.slice(0, Math.round(typed.n))) },
+        0.5,
+      )
+      .fromTo(
+        '[data-phone-page] > *',
+        { y: 14, autoAlpha: 0, filter: 'blur(6px)' },
+        { y: 0, autoAlpha: 1, filter: 'blur(0px)', stagger: 0.08, duration: 0.8 },
+        1.35,
+      )
+      .fromTo('[data-badge]', { scale: 0, rotate: -12 }, { scale: 1, rotate: 4, duration: 0.8, ease: 'back.out(2.5)' }, 1.7);
+  }
+
+  document.querySelector('[data-focus-dock]')?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('ask-focus'));
+  });
+</script>
