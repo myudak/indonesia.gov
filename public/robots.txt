@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://indonesia.gov.myudak.com/sitemap-index.xml

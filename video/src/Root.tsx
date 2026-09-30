@@ -15,6 +15,7 @@ import { Intro } from './scenes/Intro';
 import { Manifesto } from './scenes/Manifesto';
 import { Orbit } from './scenes/Orbit';
 import { Outro } from './scenes/Outro';
+import { OgImage } from './OgImage';
 
 loadSerif('normal', { weights: ['400'], subsets: ['latin'] });
 loadSerif('italic', { weights: ['400'], subsets: ['latin'] });
@@ -80,5 +81,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Reel" component={Reel} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} />
     {/* Instagram Reels / TikTok cut: same timeline and music, scenes recompose via useVertical() */}
     <Composition id="ReelVertical" component={Reel} durationInFrames={DURATION} fps={FPS} width={1080} height={1920} />
+    {/* Social preview image for the website (rendered as a still into ../public/images/social) */}
+    <Composition id="OgImage" component={OgImage} durationInFrames={1} fps={FPS} width={1200} height={630} />
   </>
 );
