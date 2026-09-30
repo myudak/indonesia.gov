@@ -7,6 +7,7 @@ import { wipe } from '@remotion/transitions/wipe';
 import { linearTiming, TransitionSeries } from '@remotion/transitions';
 import { Composition } from 'remotion';
 import { EXPO_IN_OUT, FPS } from './lib/motion';
+import { BAR_SEC, Soundtrack } from './Soundtrack';
 import { Board } from './scenes/Board';
 import { Devices } from './scenes/Devices';
 import { HeroShot } from './scenes/HeroShot';
@@ -25,12 +26,23 @@ const CREDIT = 'Konsep desain portofolio · 2026';
 
 const T = 16; // transition length in frames
 const timing = linearTiming({ durationInFrames: T, easing: EXPO_IN_OUT });
+const DURATION = 1800; // 30s
 
-// Scene lengths (frames at 60fps). Total = sum - 6 transitions × T = 1800 (30s).
-const SCENES = { intro: 190, hero: 386, manifesto: 250, orbit: 250, board: 320, devices: 250, outro: 250 };
-const DURATION = Object.values(SCENES).reduce((a, b) => a + b, 0) - 6 * T;
+// Every cut lands on the music: the first cut on the track's first hit, the rest on
+// half-bar beats counted from it (bar hits on the Manifesto→Orbit and Devices→Outro cuts).
+const FIRST_CUT = 174; // frame where the first hit lands (2.9s)
+const HALF_BAR = (BAR_SEC / 2) * FPS;
+const CUTS = [0, 5, 8, 11, 15, 18].map((halfBars) => FIRST_CUT + Math.round(halfBars * HALF_BAR));
+
+// TransitionSeries lengths so each transition is centred on its cut; they add up to DURATION + 6T.
+const bounds = [0, ...CUTS, DURATION];
+const SCENE_LENGTHS = bounds.slice(1).map((end, i) => end - bounds[i] + (i > 0 ? T / 2 : 0) + (i < CUTS.length ? T / 2 : 0));
+const [intro, hero, manifesto, orbit, board, devices, outro] = SCENE_LENGTHS;
+const SCENES = { intro, hero, manifesto, orbit, board, devices, outro };
 
 const Reel: React.FC = () => (
+  <>
+  <Soundtrack firstHitFrame={FIRST_CUT} outroHitFrame={CUTS[5]} total={DURATION} />
   <TransitionSeries>
     <TransitionSeries.Sequence durationInFrames={SCENES.intro}>
       <Intro />
@@ -60,6 +72,7 @@ const Reel: React.FC = () => (
       <Outro author={AUTHOR} credit={CREDIT} />
     </TransitionSeries.Sequence>
   </TransitionSeries>
+  </>
 );
 
 export const RemotionRoot: React.FC = () => (

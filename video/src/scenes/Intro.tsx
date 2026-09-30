@@ -41,7 +41,7 @@ export const Intro: React.FC = () => {
           Satu pintu untuk semua layanan pemerintah.
         </p>
         <p className="mt-6 text-[20px] font-semibold uppercase tracking-[0.3em] text-ink/40" style={rise(frame, 110, { dist: 16 })}>
-          Konsep desain
+          Design konsep
         </p>
       </div>
     </AbsoluteFill>

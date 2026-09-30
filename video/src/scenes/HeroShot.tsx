@@ -10,8 +10,8 @@ import { EXPO_IN_OUT, keys, prog, rise, typeText } from '../lib/motion';
 // Three slides: when each one starts wiping in (frames, local to this scene)
 const SLIDES = [
   { ex: examples[0], at: 0 },
-  { ex: examples[1], at: 200 },
-  { ex: examples[4], at: 290 },
+  { ex: examples[1], at: 206 }, // wipe midpoints land on half-bar beats (local 236, 312)
+  { ex: examples[4], at: 282 },
 ];
 
 export const HeroShot: React.FC = () => {
