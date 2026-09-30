@@ -1,159 +1,494 @@
 ---
-import Icon from './Icon.astro';
+import { Image } from 'astro:assets';
+
+// Optional photos. Drop files named camp / portrait / rumah (.png, .jpg or .webp) into
+// src/assets/roadmap and they replace the placeholders automatically.
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/roadmap/*.{png,jpg,jpeg,webp}', { eager: true });
+const photo = (name: string) =>
+  Object.entries(files).find(([path]) => path.split('/').pop()!.split('.')[0] === name)?.[1].default;
+const camp = photo('camp');
+const portrait = photo('portrait');
+const rumah = photo('rumah');
+
+const i = {
+  pin: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>',
+  money: '<rect x="3" y="6.5" width="18" height="11" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
+  home: '<path d="M4 11 12 4.5 20 11v8.5H4Z"/><path d="M10 19.5v-5h4v5"/>',
+  chev: '<path d="m7 14 5-5 5 5"/>',
+  down: '<path d="m7 10 5 5 5-5"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  search: '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>',
+  expand: '<path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/>',
+  shield: '<path d="M12 3.5 19 6.5v5c0 4.3-2.9 7.6-7 9.5-4.1-1.9-7-5.2-7-9.5v-5z"/>',
+};
+const svg = (name: keyof typeof i, cls = 'size-3') =>
+  `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${i[name]}</svg>`;
+
+const jobs = [
+  ['Pranata Komputer Ahli Pertama', 'Badan Pusat Statistik', '#23408e'],
+  ['Analis Data Ahli Muda', 'Kementerian Kesehatan', '#0c7a4d'],
+  ['Perancang Sistem Informasi', 'BMKG', '#0d6070'],
+];
+const camps = [
+  ['Bumi Perkemahan Mandalawangi', 'Cibodas, Cianjur'],
+  ['Pos Kandang Batu', 'Jalur Cibodas'],
+  ['Pos Kandang Badak', 'Jalur Cibodas'],
+  ['Alun-alun Suryakencana', 'Jalur Gunung Putri'],
+];
+const agencies = [
+  ['Dukcapil', 'D', '#8a2c6d'],
+  ['Imigrasi', 'I', '#23408e'],
+  ['BPJS Kesehatan', 'B', '#0c7a4d'],
+  ['Direktorat Jenderal Pajak', 'P', '#b8860b'],
+];
 ---
 
-<section id="rencana" class="overflow-hidden bg-paper px-4 pb-24 pt-28 sm:pb-32 sm:pt-36">
-  <div class="mx-auto max-w-[640px] text-center">
-    <h2 class="font-serif text-[clamp(2.4rem,5.5vw,4.2rem)] leading-[1] tracking-[-0.02em]" data-rise-lines>
-      Segera hadir di 2027
-    </h2>
-    <p class="mt-5 text-[17px] leading-relaxed text-muted" data-rise>
+<section id="rencana" class="overflow-hidden bg-paper pb-28 pt-28 sm:pb-36 sm:pt-36">
+  <div class="mx-auto max-w-[640px] px-4 text-center">
+    <h2 class="font-serif text-[clamp(2.4rem,5.5vw,4.2rem)] leading-[1] tracking-[-0.02em]" data-rise-lines>Segera hadir di 2027</h2>
+    <p class="mx-auto mt-5 max-w-[46ch] text-[17px] leading-relaxed text-muted" data-rise>
       Lebih dari sekadar jawaban: kamu bisa isi formulir, pantau progres, dan atur semua urusanmu di satu tempat.
     </p>
-    <a href="#rencana" class="text-link mt-6" data-rise>Lihat rencana ke depan</a>
+    <a href="#rencana" class="mt-7 inline-flex rounded-full bg-ink px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-merah active:scale-95" data-rise>
+      Lihat rencana ke depan
+    </a>
   </div>
 
-  <!-- Floating previews. Stacked on mobile, scattered with parallax on large screens. -->
-  <div class="relative mx-auto mt-16 grid max-w-[1200px] gap-4 sm:grid-cols-2 lg:mt-24 lg:block lg:h-[820px]" data-board>
-    <!-- SIM tracking -->
-    <div class="mock-card lg:absolute lg:left-[2%] lg:top-[4%] lg:w-[270px]" data-speed="0.9" data-rise>
-      <p class="font-bold">Perpanjang SIM A</p>
-      <p class="mt-0.5 text-muted">Estimasi selesai 12 Nov 2026</p>
-      <div class="mt-4 flex items-center">
-        <span class="grid size-5 place-items-center rounded-full bg-merah text-white"><Icon name="check" class="size-3" /></span>
-        <span class="h-[3px] flex-1 bg-merah"></span>
-        <span class="size-5 rounded-full border-[5px] border-merah bg-white"></span>
-        <span class="h-[3px] flex-1 bg-ink/10"></span>
-        <span class="size-5 rounded-full bg-ink/10"></span>
-      </div>
-      <div class="mt-2 flex justify-between text-[11px] text-muted"><span>Diajukan</span><span>Diproses</span><span>Siap</span></div>
-    </div>
-
-    <!-- Vehicle tax -->
-    <div class="mock-card lg:absolute lg:left-[27%] lg:top-[0%] lg:w-[250px]" data-speed="1.15" data-rise>
-      <p class="font-bold">Bayar pajak kendaraan</p>
-      <div class="mt-3 rounded-xl bg-ink px-3 py-2 text-center font-mono text-[15px] font-bold tracking-[0.2em] text-white">B 1234 XYZ</div>
-      <div class="mt-3 flex justify-between"><span class="text-muted">PKB + SWDKLLJ</span><span class="font-semibold">Rp 2.145.000</span></div>
-      <button class="mt-3 w-full rounded-full bg-merah py-2 font-semibold text-white" tabindex="-1">Bayar</button>
-    </div>
-
-    <!-- Faskes -->
-    <div class="mock-card lg:absolute lg:left-[52%] lg:top-[6%] lg:w-[280px]" data-speed="0.8" data-rise>
-      <p class="font-bold">Pilih faskes BPJS</p>
-      <div class="mt-3 space-y-2">
-        {
-          [
-            ['Puskesmas Kebayoran Baru', true],
-            ['Klinik Pratama Sehat Bersama', false],
-            ['Puskesmas Kebayoran Lama', false],
-          ].map(([n, on]) => (
-            <label class="flex items-center justify-between rounded-xl bg-paper px-3 py-2">
-              <span>{n}</span>
-              <span class:list={['size-4 rounded-full border-2', on ? 'border-[5px] border-emerald-600' : 'border-ink/25']} />
-            </label>
-          ))
-        }
-      </div>
-    </div>
-
-    <!-- Login -->
-    <div class="mock-card flex items-center justify-center lg:absolute lg:right-[2%] lg:top-[2%] lg:w-[150px]" data-speed="1.3" data-rise>
-      <span class="rounded-full bg-ink px-5 py-2 font-semibold text-white">Masuk</span>
-    </div>
-
-    <!-- Data update across agencies -->
-    <div class="mock-card lg:absolute lg:left-[8%] lg:top-[40%] lg:w-[300px]" data-speed="1.2" data-rise>
-      <p class="font-bold">Perbarui data di semua instansi</p>
-      <div class="mt-3 space-y-2">
-        {
-          ['Dukcapil', 'Imigrasi', 'BPJS Kesehatan', 'Direktorat Jenderal Pajak'].map((n) => (
-            <div class="flex items-center justify-between rounded-xl border border-line px-3 py-2">
-              <span>{n}</span>
-              <span class="grid size-4 place-items-center rounded bg-[#23408e] text-white">
-                <Icon name="check" class="size-3" />
-              </span>
-            </div>
-          ))
-        }
-      </div>
-      <div class="mt-3 text-right"><span class="rounded-full bg-[#23408e] px-4 py-1.5 font-semibold text-white">Ubah data</span></div>
-    </div>
-
-    <!-- NIB -->
-    <div class="mock-card lg:absolute lg:left-[40%] lg:top-[38%] lg:w-[260px]" data-speed="0.85" data-rise>
-      <p class="font-bold">Daftar NIB usaha</p>
-      <div class="mt-3 flex items-center gap-2 rounded-full border border-line px-3 py-2 text-muted">🔍 Kedai kopi</div>
-      <div class="mt-2 rounded-xl bg-amber-50 px-3 py-2">
-        <p class="font-semibold">KBLI 56303</p>
-        <p class="text-muted">Rumah minum / kafe</p>
-      </div>
-      <p class="mt-2 text-[11px] text-emerald-700">Gratis untuk usaha mikro & kecil</p>
-    </div>
-
-    <!-- Passport -->
-    <div class="mock-card lg:absolute lg:right-[4%] lg:top-[30%] lg:w-[260px]" data-speed="1.1" data-rise>
-      <div class="flex items-center gap-3">
-        <span class="grid h-12 w-9 place-items-center rounded-md bg-[#23408e] text-[8px] font-bold text-[#e7c873]">PASPOR</span>
-        <div>
-          <p class="font-bold">Paspor</p>
-          <p class="text-muted">Tiba sekitar 5 Nov 2026</p>
+  <!-- Board: fixed 1480px design, scaled to fit on desktop, swipeable on smaller screens -->
+  <div class="rm-wrap mt-16 sm:mt-24" data-board-wrap data-lenis-prevent-touch>
+    <div class="rm-board" data-board>
+      <!-- Column 1: job matches -->
+      <div class="rm-col w-[230px] lg:pt-[190px]" data-speed="0.9">
+        <div class="rm-card" data-rise>
+          <p class="rm-title">3 formasi paling cocok untukmu</p>
+          <div class="mt-2.5 rounded-[14px] border border-line">
+            {
+              jobs.map(([role, org, color], n) => (
+                <div class:list={['px-2.5 py-2', n > 0 && 'border-t border-line']}>
+                  <div class="flex items-start gap-2">
+                    <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-[8px] font-bold text-white" style={`background:${color}`}>
+                      {org[0]}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate font-semibold">{role}</p>
+                      <p class="truncate text-muted">{org}</p>
+                    </div>
+                    <span class:list={['text-muted', n > 0 && 'rotate-180']} set:html={svg('chev')} />
+                  </div>
+                  {n === 0 && (
+                    <ul class="mt-2 space-y-1 pl-7 text-muted">
+                      <li class="flex items-center gap-1.5"><Fragment set:html={svg('pin')} /> Jakarta Pusat</li>
+                      <li class="flex items-center gap-1.5"><Fragment set:html={svg('money')} /> Rp 6–9 jt per bulan</li>
+                      <li class="flex items-center gap-1.5"><Fragment set:html={svg('home')} /> Hibrida · 2 hari WFH</li>
+                    </ul>
+                  )}
+                </div>
+              ))
+            }
+          </div>
+          <div class="mt-2.5 text-right"><span class="rm-btn bg-[#23408e]">Lamar</span></div>
         </div>
       </div>
-      <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-ink/10"><div class="h-full w-2/3 rounded-full bg-[#23408e]"></div></div>
-      <div class="mt-2 flex justify-between text-[11px] text-muted"><span>Diajukan</span><span>Diproses</span></div>
-    </div>
 
-    <!-- CPNS -->
-    <div class="mock-card lg:absolute lg:left-[22%] lg:top-[74%] lg:w-[300px]" data-speed="0.95" data-rise>
-      <p class="font-bold">3 formasi paling cocok</p>
-      <div class="mt-3 space-y-2">
-        {
-          [
-            ['Pranata Komputer Ahli Pertama', 'Kementerian (contoh)', 'Jakarta'],
-            ['Analis Data', 'Badan (contoh)', 'Bandung'],
-          ].map(([role, org, loc]) => (
-            <div class="rounded-xl bg-paper px-3 py-2">
-              <p class="font-semibold">{role}</p>
-              <p class="text-muted">
-                {org} · {loc}
-              </p>
+      <!-- Column 2: campgrounds + drop zone -->
+      <div class="rm-col w-[260px] lg:pt-[130px]" data-speed="1.15">
+        <div class="rm-card" data-rise>
+          <p class="rm-title">Pilih lokasi kemah di TN Gede Pangrango</p>
+          <div class="relative mt-2.5 grid grid-cols-[1fr_78px] gap-2 overflow-hidden rounded-[14px] border border-line p-1.5">
+            <div class="space-y-1.5">
+              {
+                camps.map(([name, place], n) => (
+                  <div class="flex items-center gap-1.5 rounded-lg bg-white p-1 shadow-[0_0_0_1px_rgba(21,23,27,0.06)]">
+                    {camp ? (
+                      <Image src={camp} alt="" width={120} class="size-7 shrink-0 rounded-md object-cover" style={`object-position:${[10, 38, 66, 94][n]}% 50%`} />
+                    ) : (
+                      <span class="size-7 shrink-0 rounded-md bg-[linear-gradient(160deg,#9cc49a,#4f7f5a)]" />
+                    )}
+                    <div class="min-w-0 flex-1 leading-tight">
+                      <p class="truncate text-[9.5px] font-semibold">{name}</p>
+                      <p class="truncate text-[9px] text-muted">{place}</p>
+                    </div>
+                    <span class="rounded-full bg-paper px-1.5 py-0.5 text-[8.5px] font-semibold">Pilih</span>
+                  </div>
+                ))
+              }
             </div>
-          ))
-        }
+            <!-- park map -->
+            <svg class="h-full w-full rounded-lg" viewBox="0 0 80 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="80" height="160" fill="#dfeadb" />
+              <path d="M-10 40C20 20 40 60 90 30V-10H-10Z" fill="#cfe0c9" />
+              {[60, 48, 36, 24, 14].map((r, k) => (
+                <ellipse cx="46" cy="72" rx={r * 0.8} ry={r} fill={k % 2 ? '#b9d3b1' : '#c6dbbf'} stroke="#a7c49e" stroke-width=".6" />
+              ))}
+              <path d="M8 150C20 120 18 100 34 92S50 70 46 60" fill="none" stroke="#c8102e" stroke-width="1.6" stroke-dasharray="3 2.5" class="rm-trail" />
+              <path d="M70 0C62 40 76 80 60 160" fill="none" stroke="#9ec3dd" stroke-width="3" />
+              {[[34, 92], [44, 64], [20, 124], [52, 44]].map(([x, y]) => (
+                <g class="rm-pin" transform={`translate(${x} ${y})`}>
+                  <circle r="5" fill="#fff" stroke="#15171b" stroke-opacity=".2" />
+                  <path d="M-2.5 1.5 0-2.5l2.5 4Z" fill="#0c7a4d" />
+                </g>
+              ))}
+              <g transform="translate(70 12)"><circle r="5" fill="#fff" /><path d="M-2 -2h4v4h-4z" fill="none" stroke="#15171b" stroke-width=".8" /></g>
+              <g transform="translate(70 138)"><rect x="-5" y="-9" width="10" height="18" rx="5" fill="#fff" /><path d="M-2 -4h4M0 -6v4M-2 5h4" stroke="#15171b" stroke-width=".8" /></g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="rm-card relative flex h-[110px] items-center justify-center border-2 border-dashed border-[#23408e]/40 bg-[#eef2fb] shadow-none" data-rise data-dropzone>
+          <span class="font-semibold text-[#23408e]">Tarik CV ke mana saja</span>
+          <div class="pointer-events-none absolute -bottom-3 right-6 flex items-center gap-1" data-drag>
+            <span class="rounded-[3px] bg-merah px-1 py-0.5 text-[7px] font-bold text-white">PDF</span>
+            <span class="rounded bg-[#23408e] px-1.5 py-0.5 text-[9px] font-semibold text-white">CV_2026.pdf</span>
+            <svg class="absolute -bottom-4 left-9 size-5 drop-shadow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 3v16l4.5-4.2L12.4 21l2.6-1.2-2.9-6.1H18Z" fill="#15171b" stroke="#fff" stroke-width="1.3" stroke-linejoin="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 3: passport photo + update data -->
+      <div class="rm-col w-[210px] lg:pt-[100px]" data-speed="0.8">
+        <div class="rm-card" data-rise>
+          <p class="rm-title">Konfirmasi fotomu</p>
+          <div class="relative mt-2.5 overflow-hidden rounded-[10px] border border-line bg-[radial-gradient(circle_at_30%_40%,#e7f0e4_0_20%,transparent_21%),repeating-radial-gradient(circle_at_70%_60%,#eef3ea_0_3px,#e3ece0_3px_6px)] p-2">
+            <div class="flex items-center justify-between text-[6.5px] font-bold tracking-wider text-[#1f4d36]">
+              <span>REPUBLIK INDONESIA</span><span>PASPOR</span>
+            </div>
+            <div class="mt-1.5 flex gap-2">
+              {
+                portrait ? (
+                  <Image src={portrait} alt="" width={160} class="h-[74px] w-[58px] rounded-[3px] object-cover" />
+                ) : (
+                  <span class="grid h-[74px] w-[58px] place-items-end overflow-hidden rounded-[3px] bg-[#dfe3e8]">
+                    <svg viewBox="0 0 58 74" class="w-full" aria-hidden="true"><circle cx="29" cy="30" r="13" fill="#b9c0c9" /><path d="M6 74c2-16 12-24 23-24s21 8 23 24Z" fill="#b9c0c9" /></svg>
+                  </span>
+                )
+              }
+              <dl class="min-w-0 flex-1 space-y-1 text-[6.5px] leading-none">
+                <div><dt class="text-[#1f4d36]/60">Nama</dt><dd class="font-bold">PUTRI ANJANI</dd></div>
+                <div><dt class="text-[#1f4d36]/60">Kewarganegaraan</dt><dd class="font-bold">INDONESIA</dd></div>
+                <div><dt class="text-[#1f4d36]/60">Tgl. lahir</dt><dd class="font-bold">17 AGU 2001</dd></div>
+                <div><dt class="text-[#1f4d36]/60">No. paspor</dt><dd class="font-bold">X0000000</dd></div>
+              </dl>
+            </div>
+            <p class="mt-1.5 truncate font-mono text-[6px] tracking-tight text-ink/70">P&lt;IDNANJANI&lt;&lt;PUTRI&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</p>
+            <span class="pointer-events-none absolute right-2 top-7 rotate-[-18deg] rounded border border-merah/50 px-1 text-[8px] font-bold tracking-widest text-merah/60">CONTOH</span>
+          </div>
+          <div class="mt-2.5 text-right"><span class="rm-btn bg-[#23408e]">Ajukan permohonan paspor</span></div>
+        </div>
+
+        <div class="rm-card" data-rise data-ticks>
+          <p class="rm-title">Perbarui data di semua instansi</p>
+          <div class="mt-2.5 space-y-0 rounded-[14px] border border-line">
+            {
+              agencies.map(([name, letter, color], n) => (
+                <div class:list={['flex items-center gap-2 px-2.5 py-2', n > 0 && 'border-t border-line']}>
+                  <span class="grid size-5 place-items-center rounded-full text-[8px] font-bold text-white" style={`background:${color}`}>{letter}</span>
+                  <span class="flex-1 truncate font-semibold">{name}</span>
+                  <span class="rm-tick grid size-3.5 place-items-center rounded-[4px] bg-[#23408e] text-white" set:html={svg('check', 'size-2.5')} />
+                </div>
+              ))
+            }
+          </div>
+          <div class="mt-2.5 text-right"><span class="rm-btn bg-[#23408e]">Ubah data</span></div>
+        </div>
+      </div>
+
+      <!-- Column 4: medicines + housing + login -->
+      <div class="rm-col w-[250px] lg:pt-[60px]" data-speed="1.2">
+        <div class="rm-card" data-rise>
+          <p class="rm-title">Cek obat yang ditanggung BPJS</p>
+          <div class="mt-2.5 flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-muted">
+            <Fragment set:html={svg('search')} /> Cari obat
+          </div>
+          <div class="mt-2 rounded-[14px] border border-line p-2.5">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 font-semibold"><span class="size-4 rounded bg-emerald-100" /> Amoxicillin</span>
+              <span class="rounded-full bg-paper px-2 py-0.5 text-[9px] font-semibold">Hapus</span>
+            </div>
+            {
+              [
+                ['Bentuk', ['Kapsul', 'Sirup'], 0],
+                ['Kekuatan', ['500 mg'], 0],
+                ['Jumlah', ['10', '15', '30'], 0],
+              ].map(([label, opts, on]) => (
+                <div class="mt-2 grid grid-cols-[52px_1fr] items-center gap-2">
+                  <span class="text-muted">{label}</span>
+                  <div class="rm-seg relative flex rounded-full bg-paper p-0.5">
+                    <span class="rm-seg-thumb absolute inset-y-0.5 rounded-full bg-white shadow" style={`left:2px;width:calc((100% - 4px)/${(opts as string[]).length})`} />
+                    {(opts as string[]).map((o, k) => (
+                      <span class:list={['relative z-10 flex-1 py-0.5 text-center text-[9.5px]', k === on && 'font-semibold']}>{o}</span>
+                    ))}
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+          <div class="mt-2.5 text-right"><span class="rm-btn bg-[#23408e]">Ambil resep</span></div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="rm-card w-[150px] overflow-hidden p-0" data-rise>
+            {
+              rumah ? (
+                <Image src={rumah} alt="" width={320} class="h-[86px] w-full object-cover" />
+              ) : (
+                <span class="block h-[86px] bg-[linear-gradient(180deg,#bcd7ef_0_55%,#9fbf8f_55%)]" />
+              )
+            }
+            <div class="p-2.5 leading-snug">
+              <p class="text-[10px] font-semibold text-[#23408e]">Perumahan Griya Asri, rumah subsidi</p>
+              <p class="mt-1 text-[9.5px] text-muted">Jl. Raya Setu No. 12,<br />Bekasi, Jawa Barat</p>
+            </div>
+          </div>
+          <div class="rm-card mt-6 flex items-center gap-1.5 rounded-full px-3 py-2" data-rise>
+            <span class="grid size-5 place-items-center rounded-full bg-merah text-white" set:html={svg('shield', 'size-3')} />
+            <span class="font-semibold">Masuk</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 5: passport cover + tracking -->
+      <div class="rm-col w-[200px]" data-speed="0.85">
+        <div class="rm-passport relative aspect-[3/4.2] overflow-hidden rounded-[10px] bg-[linear-gradient(160deg,#21483a,#10281f)] p-4 text-center shadow-[0_30px_60px_-20px_rgba(0,0,0,0.5)]" data-rise data-passport>
+          <p class="text-[7px] font-semibold tracking-[0.3em] text-[#d9bd73]/70">PASPOR</p>
+          <p class="mt-3 font-serif text-[17px] leading-tight tracking-[0.12em] text-[#d9bd73]">REPUBLIK<br />INDONESIA</p>
+          <svg class="mx-auto mt-5 w-[88px]" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#d9bd73" stroke-width="1.5" />
+            <circle cx="50" cy="50" r="36" fill="none" stroke="#d9bd73" stroke-width=".8" stroke-dasharray="2 3" />
+            {Array.from({ length: 17 }, (_, k) => {
+              const a = (k / 17) * Math.PI * 2;
+              return <line x1={50 + Math.cos(a) * 16} y1={50 + Math.sin(a) * 16} x2={50 + Math.cos(a) * 30} y2={50 + Math.sin(a) * 30} stroke="#d9bd73" stroke-width="1.4" stroke-linecap="round" />;
+            })}
+            <path d="M50 38l3.5 7.6 8.3.9-6.2 5.6 1.8 8.2L50 56l-7.4 4.3 1.8-8.2-6.2-5.6 8.3-.9Z" fill="#d9bd73" />
+          </svg>
+          <svg class="absolute bottom-4 left-1/2 w-6 -translate-x-1/2" viewBox="0 0 30 20" aria-hidden="true">
+            <rect x="1" y="1" width="28" height="18" rx="3" fill="none" stroke="#d9bd73" stroke-width="1.4" />
+            <circle cx="15" cy="10" r="4" fill="none" stroke="#d9bd73" stroke-width="1.4" />
+          </svg>
+          <span class="rm-shine pointer-events-none absolute inset-0" />
+        </div>
+
+        <div class="rm-card" data-rise data-track>
+          <div class="flex items-center gap-2">
+            <span class="grid h-7 w-5 place-items-center rounded-[3px] bg-[#1f4d36]"><span class="size-1.5 rounded-full border border-[#d9bd73]" /></span>
+            <div class="leading-tight">
+              <p class="font-semibold">Paspor</p>
+              <p class="text-muted">Tiba sekitar 5 Nov 2026</p>
+            </div>
+          </div>
+          <div class="relative mt-3.5 h-4">
+            <span class="absolute inset-x-2 top-1/2 h-[2px] -translate-y-1/2 bg-ink/10" />
+            <span class="rm-track-fill absolute left-2 top-1/2 h-[2px] w-0 -translate-y-1/2 bg-[#23408e]" />
+            <span class="absolute left-0 top-0 grid size-4 place-items-center rounded-full bg-[#23408e] text-white" set:html={svg('check', 'size-2.5')} />
+            <span class="rm-track-dot absolute left-[48%] top-0 size-4 rounded-full border-[4px] border-[#23408e] bg-white" />
+            <span class="absolute right-0 top-1 size-2 rounded-full bg-ink/15" />
+          </div>
+          <div class="mt-1.5 flex justify-between text-[9px] text-muted"><span>Diajukan</span><span>Diproses</span><span>Dikirim</span></div>
+        </div>
+      </div>
+
+      <!-- Column 6: pharmacies / faskes on a map -->
+      <div class="rm-col w-[210px] lg:pt-[40px]" data-speed="1.1">
+        <div class="rm-card" data-rise>
+          <p class="rm-title">Pilih faskes BPJS terdekat</p>
+          <div class="relative mt-2.5 h-[170px] overflow-hidden rounded-[14px] border border-line">
+            <svg class="absolute inset-0 size-full" viewBox="0 0 200 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="200" height="170" fill="#eef0ea" />
+              <path d="M120 0h80v70c-30 6-50-10-80-4Z" fill="#d6e8cf" />
+              <path d="M-5 120C40 110 60 140 110 128S170 150 205 138" fill="none" stroke="#b7d4ec" stroke-width="8" />
+              {[20, 55, 90, 125, 160].map((x) => <path d={`M${x} 0v170`} stroke="#fff" stroke-width="3" />)}
+              {[25, 60, 95, 150].map((y) => <path d={`M0 ${y}h200`} stroke="#fff" stroke-width="3" />)}
+              <path d="M0 40L200 100" stroke="#f3cf8a" stroke-width="5" />
+              <path d="M70 0 110 170" stroke="#f3cf8a" stroke-width="4" />
+            </svg>
+            <span class="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-white px-2 py-1 text-[9px] font-semibold shadow">12110 <Fragment set:html={svg('down', 'size-2.5')} /></span>
+            <span class="absolute right-2 top-2 grid size-5 place-items-center rounded-full bg-white shadow" set:html={svg('expand', 'size-2.5')} />
+            {[[40, 42], [62, 55], [108, 48], [132, 90]].map(([x, y]) => (
+              <span class="rm-mappin absolute grid size-5 -translate-x-1/2 -translate-y-full place-items-center rounded-full rounded-bl-none bg-white text-[#23408e] shadow" style={`left:${x / 2}%;top:${(y / 170) * 100}%`} set:html={svg('pin', 'size-3')} />
+            ))}
+            <div class="absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-xl bg-white p-1.5 shadow-lg">
+              <span class="grid size-7 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700" set:html={svg('home', 'size-3.5')} />
+              <div class="min-w-0 flex-1 leading-tight">
+                <p class="truncate text-[9.5px] font-semibold">Puskesmas Kebayoran Baru</p>
+                <p class="truncate text-[8.5px] text-muted">Jl. Sungai Bambu, Jakarta Selatan</p>
+              </div>
+              <span class="grid h-5 w-8 place-items-center rounded-full bg-[#23408e] text-white" set:html={svg('check', 'size-3')} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Drop zone -->
-    <div
-      class="mock-card flex min-h-[120px] items-center justify-center border-2 border-dashed border-[#23408e]/40 bg-[#eef2fb] text-[#23408e] shadow-none lg:absolute lg:right-[10%] lg:top-[66%] lg:w-[240px]"
-      data-speed="1.25"
-      data-rise
-    >
-      <span class="font-semibold">Tarik berkas ke sini</span>
-    </div>
   </div>
+  <p class="mt-6 text-center text-[12px] text-muted lg:hidden">Geser untuk melihat lebih banyak →</p>
 </section>
+
+<style>
+  .rm-wrap {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 0 16px 40px;
+  }
+  .rm-wrap::-webkit-scrollbar {
+    display: none;
+  }
+  .rm-board {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 1480px;
+    transform-origin: top left;
+  }
+  .rm-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+  }
+  @media (min-width: 1024px) {
+    .rm-wrap {
+      overflow: visible;
+      padding: 0;
+    }
+    .rm-board {
+      justify-content: center;
+    }
+  }
+  .rm-card {
+    border-radius: 20px;
+    background: #fff;
+    padding: 12px;
+    font-size: 10.5px;
+    line-height: 1.35;
+    box-shadow:
+      0 24px 60px -24px rgba(21, 23, 27, 0.25),
+      0 0 0 1px rgba(21, 23, 27, 0.05);
+  }
+  .rm-title {
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .rm-btn {
+    display: inline-block;
+    border-radius: 9999px;
+    padding: 5px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .rm-passport {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .rm-shine {
+    background: radial-gradient(circle at var(--sx, 30%) var(--sy, 20%), rgba(255, 240, 200, 0.28), transparent 45%);
+    mix-blend-mode: screen;
+  }
+  .rm-track-dot {
+    box-shadow: 0 0 0 0 rgba(35, 64, 142, 0.45);
+    animation: rm-pulse 1.8s infinite;
+  }
+  @keyframes rm-pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgba(35, 64, 142, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(35, 64, 142, 0);
+    }
+  }
+</style>
 
 <script>
   import { gsap, prefersReducedMotion } from '../scripts/motion';
 
+  const wrap = document.querySelector<HTMLElement>('[data-board-wrap]')!;
+  const board = document.querySelector<HTMLElement>('[data-board]')!;
+  const BOARD_WIDTH = 1480;
+
+  // Desktop: scale the whole 1480px board to fit; mobile: leave it at 1:1 and swipeable
+  function fitBoard() {
+    if (window.innerWidth >= 1024) {
+      const available = wrap.clientWidth - 32;
+      const scale = Math.min(1, available / BOARD_WIDTH);
+      board.style.transform = `scale(${scale})`;
+      board.style.marginLeft = `${(wrap.clientWidth - BOARD_WIDTH * scale) / 2}px`;
+      wrap.style.height = `${board.offsetHeight * scale + 80}px`;
+    } else {
+      board.style.transform = '';
+      board.style.marginLeft = '';
+      wrap.style.height = '';
+    }
+  }
+  fitBoard();
+  new ResizeObserver(fitBoard).observe(wrap);
+
   if (!prefersReducedMotion()) {
     const mm = gsap.matchMedia();
+
     mm.add('(min-width: 1024px)', () => {
-      // each card drifts at its own speed (yPercent, so it never fights the [data-rise] y tween)
-      document.querySelectorAll<HTMLElement>('[data-board] [data-speed]').forEach((card) => {
-        const speed = parseFloat(card.dataset.speed!);
+      // columns drift at their own speed, like the floating previews on the original
+      board.querySelectorAll<HTMLElement>('.rm-col').forEach((col) => {
+        const speed = parseFloat(col.dataset.speed!);
         gsap.fromTo(
-          card,
-          { yPercent: 70 * speed, rotate: (speed - 1) * 12 },
-          {
-            yPercent: -55 * speed,
-            rotate: 0,
-            ease: 'none',
-            scrollTrigger: { trigger: '[data-board]', start: 'top bottom', end: 'bottom top', scrub: 1 },
-          },
+          col,
+          { y: 120 * speed },
+          { y: -80 * speed, ease: 'none', scrollTrigger: { trigger: wrap, start: 'top bottom', end: 'bottom top', scrub: 1 } },
         );
       });
+
+      // passport cover tilts toward the pointer, with a moving sheen
+      const passport = board.querySelector<HTMLElement>('[data-passport]')!;
+      passport.addEventListener('pointermove', (e) => {
+        const r = passport.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        gsap.to(passport, { rotateY: (x - 0.5) * 18, rotateX: (0.5 - y) * 14, transformPerspective: 700, duration: 0.6 });
+        passport.style.setProperty('--sx', `${x * 100}%`);
+        passport.style.setProperty('--sy', `${y * 100}%`);
+      });
+      passport.addEventListener('pointerleave', () => gsap.to(passport, { rotateY: 0, rotateX: 0, duration: 1, ease: 'elastic.out(1, 0.5)' }));
     });
+
+    const inView = (el: Element | null, start = 'top 80%') => ({ trigger: el, start, once: true });
+
+    // CV file gets dragged into the drop zone on a loop
+    const drop = board.querySelector('[data-dropzone]')!;
+    gsap
+      .timeline({ repeat: -1, repeatDelay: 1.2, scrollTrigger: { trigger: drop, start: 'top 90%', toggleActions: 'play pause resume pause' } })
+      .fromTo('[data-drag]', { x: 90, y: 60, autoAlpha: 0 }, { x: 90, y: 60, autoAlpha: 1, duration: 0.3 })
+      .to('[data-drag]', { x: -40, y: -40, duration: 1.2, ease: 'power2.inOut' })
+      .to(drop, { backgroundColor: '#dfe7fa', borderColor: 'rgba(35,64,142,0.9)', scale: 1.02, duration: 0.3 }, '-=0.3')
+      .to('[data-drag]', { scale: 0.6, autoAlpha: 0, duration: 0.3 })
+      .to(drop, { backgroundColor: '#eef2fb', borderColor: 'rgba(35,64,142,0.4)', scale: 1, duration: 0.5 }, '+=0.4');
+
+    // agency checkboxes tick one by one
+    gsap.fromTo(
+      '[data-ticks] .rm-tick',
+      { scale: 0 },
+      { scale: 1, duration: 0.5, stagger: 0.18, ease: 'back.out(3)', scrollTrigger: inView(board.querySelector('[data-ticks]')) },
+    );
+
+    // passport tracking bar fills to "Diproses"
+    gsap.fromTo('.rm-track-fill', { width: 0 }, { width: '46%', duration: 1.6, ease: 'power2.inOut', scrollTrigger: inView(board.querySelector('[data-track]')) });
+
+    // map pins drop in
+    gsap.fromTo('.rm-mappin', { y: -24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.12, ease: 'bounce.out', scrollTrigger: inView(board.querySelector('.rm-mappin')) });
+    gsap.fromTo('.rm-pin', { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.6, stagger: 0.12, ease: 'back.out(3)', scrollTrigger: inView(board.querySelector('.rm-pin')) });
+    gsap.fromTo('.rm-trail', { drawSVG: '0%' }, { drawSVG: '100%', duration: 2, ease: 'power2.inOut', scrollTrigger: inView(board.querySelector('.rm-trail')) });
+
+    // segmented controls: the highlight slides across "Jumlah" options now and then
+    const seg = board.querySelectorAll<HTMLElement>('.rm-seg')[2];
+    if (seg) {
+      const thumb = seg.querySelector('.rm-seg-thumb')!;
+      gsap
+        .timeline({ repeat: -1, repeatDelay: 1.5, scrollTrigger: { trigger: seg, start: 'top 90%', toggleActions: 'play pause resume pause' } })
+        .to(thumb, { xPercent: 100, duration: 0.6, ease: 'power3.inOut', delay: 1.5 })
+        .to(thumb, { xPercent: 200, duration: 0.6, ease: 'power3.inOut', delay: 1.5 })
+        .to(thumb, { xPercent: 0, duration: 0.8, ease: 'power3.inOut', delay: 1.5 });
+    }
   }
 </script>

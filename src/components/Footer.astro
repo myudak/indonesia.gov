@@ -1,19 +1,27 @@
 ---
 import Flag from './Flag.astro';
-import Icon from './Icon.astro';
 
 const links = ['Cara kerja', 'Privasi', 'Tentang', 'Pertanyaan umum'];
+
+// Laurel branch: leaves placed along a quadratic curve, alternating sides.
+const P0 = [30, 98], P1 = [2, 52], P2 = [26, 4];
+const leaves = Array.from({ length: 9 }, (_, i) => {
+  const t = 0.08 + (i / 8) * 0.88;
+  const x = (1 - t) ** 2 * P0[0] + 2 * (1 - t) * t * P1[0] + t ** 2 * P2[0];
+  const y = (1 - t) ** 2 * P0[1] + 2 * (1 - t) * t * P1[1] + t ** 2 * P2[1];
+  const dx = 2 * (1 - t) * (P1[0] - P0[0]) + 2 * t * (P2[0] - P1[0]);
+  const dy = 2 * (1 - t) * (P1[1] - P0[1]) + 2 * t * (P2[1] - P1[1]);
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  return [-1, 1].map((side) => ({ x, y, angle: angle + side * 42, side }));
+}).flat();
+const stem = `M${P0.join(' ')} Q${P1.join(' ')} ${P2.join(' ')}`;
 ---
 
 <footer id="faq" class="px-4 pb-32 pt-28 sm:pb-36 sm:pt-36">
   <nav class="flex flex-col items-center gap-1" aria-label="Tautan bawah">
     {
       links.map((l) => (
-        <a
-          href="#"
-          class="group relative font-serif text-[clamp(2.4rem,6vw,4.6rem)] leading-[1.08] tracking-[-0.02em]"
-          data-rise
-        >
+        <a href="#" class="group relative font-serif text-[clamp(2.4rem,6vw,4.6rem)] leading-[1.08] tracking-[-0.02em]" data-rise>
           {l}
           <span class="absolute -bottom-1 left-0 h-[2px] w-full origin-right scale-x-0 bg-merah transition-transform duration-700 ease-out-expo group-hover:origin-left group-hover:scale-x-100" />
         </a>
@@ -21,16 +29,97 @@ const links = ['Cara kerja', 'Privasi', 'Tentang', 'Pertanyaan umum'];
     }
   </nav>
 
-  <div class="mx-auto mt-24 flex max-w-[1100px] flex-col items-center justify-between gap-6 border-t border-line pt-8 text-[13px] text-muted sm:flex-row">
-    <div class="flex items-center gap-2.5 text-ink">
-      <Flag class="h-[13px] w-[20px]" />
-      <span class="font-serif text-[19px] leading-none">Indonesia.gov</span>
+  <div class="mx-auto mt-28 max-w-[1400px] sm:mt-40" data-footer>
+    <!-- Giant wordmark, scaled by JS to exactly fill the container width -->
+    <div class="flex justify-center overflow-hidden" data-wordmark-box>
+      <p
+        class="w-max whitespace-nowrap font-serif text-[14.6vw] leading-[0.95] tracking-[-0.035em] 2xl:text-[210px]"
+        aria-label="Indonesia.gov"
+        data-wordmark
+      >
+        Indonesia.gov
+      </p>
     </div>
-    <p class="max-w-[52ch] text-center sm:text-left">
-      Konsep desain untuk portofolio, terinspirasi dari America.gov. Tidak berafiliasi dengan Pemerintah Republik Indonesia.
+
+    <div class="mt-10 grid items-center gap-8 text-center text-[15px] sm:mt-12 lg:grid-cols-[1fr_auto_1fr] lg:text-left">
+      <div class="flex items-center justify-center gap-3 lg:justify-start" data-rise>
+        <span class="grid size-10 shrink-0 place-items-center rounded-full border border-ink/25 bg-white shadow-[inset_0_0_0_3px_#fff,inset_0_0_0_4px_rgba(21,23,27,0.12)]">
+          <Flag class="h-[10px] w-[15px]" />
+        </span>
+        <span>Konsep portofolio, terinspirasi America.gov</span>
+      </div>
+
+      <div class="flex items-center justify-center gap-5" data-rise>
+        <svg class="laurel h-20 w-11 text-ink" viewBox="-6 -6 52 110" aria-hidden="true">
+          <path d={stem} fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" />
+          {leaves.map((l) => <g transform={`rotate(${l.angle} ${l.x} ${l.y}) translate(6.5 0)`}><ellipse class="leaf" cx={l.x} cy={l.y} rx="7" ry="2.1" fill="currentColor" /></g>)}
+        </svg>
+        <span class="font-medium">Semua instansi, bekerja bersama</span>
+        <svg class="laurel h-20 w-11 -scale-x-100 text-ink" viewBox="-6 -6 52 110" aria-hidden="true">
+          <path d={stem} fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" />
+          {leaves.map((l) => <g transform={`rotate(${l.angle} ${l.x} ${l.y}) translate(6.5 0)`}><ellipse class="leaf" cx={l.x} cy={l.y} rx="7" ry="2.1" fill="currentColor" /></g>)}
+        </svg>
+      </div>
+
+      <p class="lg:text-right" data-rise>Dirancang &amp; dibangun di Indonesia</p>
+    </div>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[15px]" data-rise>
+      <a href="#" class="text-link text-[15px] font-normal">Kebijakan Privasi</a>
+      <a href="#" class="text-link text-[15px] font-normal">Syarat Penggunaan</a>
+      <button type="button" class="inline-flex items-center gap-1.5">
+        Bahasa Indonesia
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+      </button>
+    </div>
+    <p class="mt-6 text-center text-[12px] text-muted">
+      Tidak berafiliasi dengan Pemerintah Republik Indonesia. Semua data dan jawaban di halaman ini adalah contoh.
     </p>
-    <button type="button" class="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-ink">
-      <Icon name="globe" class="size-4" /> Bahasa Indonesia
-    </button>
   </div>
 </footer>
+
+<script>
+  import { gsap, SplitText, ScrollTrigger, prefersReducedMotion } from '../scripts/motion';
+
+  const box = document.querySelector<HTMLElement>('[data-wordmark-box]')!;
+  const mark = document.querySelector<HTMLElement>('[data-wordmark]')!;
+
+  // Fit the wordmark edge to edge, whatever the viewport or font metrics
+  function fit() {
+    mark.style.fontSize = '100px';
+    const natural = mark.scrollWidth;
+    mark.style.fontSize = `${(99.5 * box.clientWidth) / natural}px`;
+    ScrollTrigger.refresh();
+  }
+  document.fonts?.ready.then(fit);
+  new ResizeObserver(() => fit()).observe(box);
+
+  if (!prefersReducedMotion()) {
+    const split = SplitText.create(mark, { type: 'chars', mask: 'chars' });
+    gsap.fromTo(
+      split.chars,
+      { yPercent: 110 },
+      {
+        yPercent: 0,
+        duration: 1.4,
+        stagger: 0.045,
+        scrollTrigger: { trigger: box, start: 'top 85%', once: true },
+      },
+    );
+
+    // Leaves grow outward from the stem, bottom to top
+    document.querySelectorAll('.laurel').forEach((laurel) => {
+      gsap.fromTo(
+        laurel.querySelectorAll('.leaf'),
+        { scale: 0, transformOrigin: '50% 50%' },
+        {
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.035,
+          ease: 'back.out(2.5)',
+          scrollTrigger: { trigger: laurel, start: 'top 92%', once: true },
+        },
+      );
+    });
+  }
+</script>

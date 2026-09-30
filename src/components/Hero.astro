@@ -1,8 +1,11 @@
 ---
 import Flag from './Flag.astro';
 import Icon from './Icon.astro';
-import Doc from './Doc.astro';
+import { Image } from 'astro:assets';
 import { examples } from '../data/content';
+
+const photos = import.meta.glob<{ default: ImageMetadata }>('../assets/scenes/*.png', { eager: true });
+const photoFor = (name: string) => photos[`../assets/scenes/${name}.png`]?.default;
 ---
 
 <section id="hero" class="px-2 sm:px-4">
@@ -67,13 +70,19 @@ import { examples } from '../data/content';
               aria-roledescription="slide"
               aria-label={`Contoh ${i + 1} dari ${examples.length}: ${ex.question}`}
             >
-              <span class="scene-tag pointer-events-none absolute -bottom-[0.18em] left-4 select-none font-serif text-[clamp(5rem,18vw,11rem)] leading-none text-white/45 sm:left-8">
-                {ex.tag}
-              </span>
-              <div class="doc absolute left-[12%] top-[14%] w-[52%] -rotate-[7deg] sm:left-[7%] sm:top-[22%] sm:w-[34%]">
-                <Doc type={ex.doc} accent={ex.accent} label={ex.tag} />
-              </div>
-              <div class="answer absolute inset-x-3 bottom-3 rounded-[22px] bg-white/95 p-4 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.35)] backdrop-blur sm:inset-x-auto sm:bottom-auto sm:right-[6%] sm:top-[20%] sm:w-[46%] sm:p-5">
+              {photoFor(ex.image) && (
+                <Image
+                  src={photoFor(ex.image)!}
+                  alt={ex.alt}
+                  widths={[640, 960, 1280, 1536]}
+                  sizes="(min-width: 800px) 760px, 100vw"
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={i === 0 ? 'high' : 'low'}
+                  class="scene-media absolute inset-0 size-full object-cover object-[28%_50%] sm:object-center"
+                />
+              )}
+              <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgba(0,0,0,0.28))] sm:bg-[linear-gradient(90deg,transparent_45%,rgba(0,0,0,0.18))]" />
+              <div class="answer absolute inset-x-3 bottom-3 rounded-[22px] bg-white/95 p-4 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.35)] backdrop-blur sm:inset-x-auto sm:bottom-[6%] sm:right-[4.5%] sm:w-[44%] sm:p-5">
                 <p class="inline-flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 text-[11px] font-semibold text-ink/70">
                   <Icon name="spark" class="size-3 text-merah" /> Jawaban singkat
                 </p>
@@ -216,9 +225,8 @@ import { examples } from '../data/content';
       return;
     }
 
-    const doc = next.querySelector('.doc');
+    const media = next.querySelector('.scene-media');
     const answerBits = next.querySelectorAll('.answer, .answer > *');
-    const tag = next.querySelector('.scene-tag');
 
     sceneTl = gsap
       .timeline()
@@ -230,13 +238,8 @@ import { examples } from '../data/content';
         { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'expo.inOut' },
       )
       .to(prev, { xPercent: -12 * dir, duration: 1.1, ease: 'expo.inOut' }, 0)
-      .fromTo(tag, { yPercent: 60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 1.2 }, 0.45)
-      .fromTo(
-        doc,
-        { y: 60, rotate: -7 + 10 * dir, autoAlpha: 0 },
-        { y: 0, rotate: -7, autoAlpha: 1, duration: 1.4, ease: 'elastic.out(1, 0.75)' },
-        0.5,
-      )
+      // slow zoom-out on the incoming photo while it wipes in
+      .fromTo(media, { scale: 1.18 }, { scale: 1.04, duration: 2.2, ease: 'power3.out' }, 0)
       .fromTo(
         answerBits,
         { y: 18, autoAlpha: 0, filter: 'blur(8px)' },
@@ -249,6 +252,7 @@ import { examples } from '../data/content';
   // ---------- intro ----------
   gsap.set(scenes, { autoAlpha: 0 });
   gsap.set(scenes[0], { autoAlpha: 1 });
+  gsap.set(stage.querySelectorAll('.scene-media'), { scale: 1.04 });
 
   if (reduced) {
     showAll(root);
@@ -278,6 +282,13 @@ import { examples } from '../data/content';
         { y: 0, autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0% round 36px)', duration: 1.6 },
         0.8,
       )
+      .fromTo(scenes[0].querySelector('.scene-media'), { scale: 1.25 }, { scale: 1.04, duration: 2.4, ease: 'power3.out' }, 0.8)
+      .fromTo(
+        scenes[0].querySelectorAll('.answer, .answer > *'),
+        { y: 18, autoAlpha: 0, filter: 'blur(8px)' },
+        { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.9, stagger: 0.05 },
+        1.4,
+      )
       .fromTo('[data-hero-controls] > *', { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.07 }, 1.3)
       .add(() => {
         typePrompt(scenes[0].dataset.question!);
@@ -285,12 +296,12 @@ import { examples } from '../data/content';
       }, 1.0);
     gsap.set('[data-hero-controls]', { autoAlpha: 1 });
 
-    // subtle parallax on the floating document following the pointer
+    // subtle parallax: the photo drifts with the pointer, the answer card counters it
     stage.addEventListener('pointermove', (e) => {
       const r = stage.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5;
       const y = (e.clientY - r.top) / r.height - 0.5;
-      gsap.to(scenes[index].querySelector('.doc'), { x: x * 24, y: y * 18, duration: 1.2, overwrite: 'auto' });
+      gsap.to(scenes[index].querySelector('.scene-media'), { x: x * -18, y: y * -12, duration: 1.4, overwrite: 'auto' });
       gsap.to(scenes[index].querySelector('.answer'), { x: x * -12, y: y * -10, duration: 1.2, overwrite: 'auto' });
     });
   }
