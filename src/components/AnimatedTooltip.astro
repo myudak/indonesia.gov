@@ -1,0 +1,110 @@
+---
+// Avatar row with a springy tooltip that tilts toward the pointer.
+// Astro + GSAP port of the AnimatedTooltip used in project-ppk (React + Motion).
+import { Image } from 'astro:assets';
+
+export type TooltipItem = {
+  id: number;
+  name: string;
+  designation: string;
+  image: ImageMetadata;
+  href: string;
+};
+
+interface Props {
+  items: TooltipItem[];
+  label?: string;
+}
+
+const { items, label = 'Pembuat' } = Astro.props;
+---
+
+<ul class="m-0 flex list-none items-center p-0 pr-3" aria-label={label} data-animated-tooltip>
+  {
+    items.map((item) => {
+      const tooltipId = `author-tooltip-${item.id}`;
+      return (
+        <li class="group relative -mr-3">
+          <div
+            id={tooltipId}
+            role="tooltip"
+            class="tt-bubble pointer-events-none invisible absolute -top-16 left-1/2 z-50 flex flex-col items-center whitespace-nowrap rounded-xl border border-white/10 bg-ink px-3 py-2 text-center opacity-0 shadow-[0_12px_32px_rgba(21,23,27,0.28)]"
+          >
+            <span class="text-xs font-semibold text-white">{item.name}</span>
+            <span class="mt-0.5 text-[10px] text-white/65">{item.designation}</span>
+            <span class="tt-arrow absolute -bottom-1 left-1/2 -ml-1 h-2 w-2 rotate-45 border-b border-r border-white/10 bg-ink" />
+          </div>
+
+          <a
+            href={item.href}
+            rel="author noreferrer"
+            target="_blank"
+            aria-label={`${item.name} — ${item.designation}`}
+            aria-describedby={tooltipId}
+            class="tt-trigger relative block rounded-full outline-none transition-transform duration-300 hover:z-30 hover:-translate-y-1 focus-visible:z-30 focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-merah focus-visible:ring-offset-2"
+          >
+            <Image
+              src={item.image}
+              alt=""
+              width={96}
+              height={96}
+              class="relative m-0 size-11 rounded-full border-2 border-white object-cover object-top p-0 shadow-[0_4px_14px_rgba(21,23,27,0.18)] transition-transform duration-300 group-focus-within:scale-105 group-hover:scale-105"
+            />
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<script>
+  import { gsap, prefersReducedMotion } from '../scripts/motion';
+
+  document.querySelectorAll<HTMLElement>('[data-animated-tooltip] li').forEach((li) => {
+    const bubble = li.querySelector<HTMLElement>('.tt-bubble')!;
+    const arrow = li.querySelector<HTMLElement>('.tt-arrow')!;
+    const trigger = li.querySelector<HTMLAnchorElement>('.tt-trigger')!;
+    const reduced = prefersReducedMotion();
+    const EDGE = 12; // keep this far from the viewport edges
+
+    // centred with xPercent so GSAP's x can add the pointer-follow offset on top
+    gsap.set(bubble, { xPercent: -50, transformOrigin: '50% 100%' });
+
+    // spring-like follow: the bubble slides and tilts toward the pointer (±18px, ±10°)
+    const toX = gsap.quickTo(bubble, 'x', { duration: 0.6, ease: 'elastic.out(1, 0.55)' });
+    const toRotate = gsap.quickTo(bubble, 'rotation', { duration: 0.6, ease: 'elastic.out(1, 0.55)' });
+
+    // when the avatar sits near a screen edge, nudge the bubble inside and keep the arrow on the avatar
+    let shift = 0;
+    const measure = () => {
+      gsap.set(bubble, { x: 0, rotation: 0, scale: 1, y: 0 });
+      const r = bubble.getBoundingClientRect();
+      const vw = document.documentElement.clientWidth;
+      shift = r.right > vw - EDGE ? vw - EDGE - r.right : r.left < EDGE ? EDGE - r.left : 0;
+      arrow.style.left = `calc(50% - ${shift}px)`;
+      gsap.set(bubble, { x: shift, transformOrigin: `calc(50% - ${shift}px) 100%` });
+    };
+
+    const show = () => {
+      measure();
+      gsap.to(bubble, reduced ? { autoAlpha: 1, duration: 0.15 } : { autoAlpha: 1, y: 0, scale: 1, duration: 0.18, ease: 'expo.out', startAt: { y: 10, scale: 0.92 } });
+    };
+    const hide = () => {
+      gsap.to(bubble, reduced ? { autoAlpha: 0, duration: 0.15 } : { autoAlpha: 0, y: 8, scale: 0.94, duration: 0.18, ease: 'expo.out' });
+      toX(shift);
+      toRotate(0);
+    };
+
+    trigger.addEventListener('mouseenter', show);
+    trigger.addEventListener('focus', show);
+    trigger.addEventListener('mouseleave', hide);
+    trigger.addEventListener('blur', hide);
+    trigger.addEventListener('mousemove', (e) => {
+      if (reduced) return;
+      const r = trigger.getBoundingClientRect();
+      const offset = gsap.utils.clamp(-100, 100, e.clientX - r.left - r.width / 2);
+      toX(shift + gsap.utils.mapRange(-100, 100, -18, 18, offset));
+      toRotate(gsap.utils.mapRange(-100, 100, -10, 10, offset));
+    });
+  });
+</script>

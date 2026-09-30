@@ -1,5 +1,17 @@
 ---
 import Flag from './Flag.astro';
+import AnimatedTooltip from './AnimatedTooltip.astro';
+import myudak from '../assets/team/myudak.png';
+
+const team = [
+  {
+    id: 1,
+    name: 'Muchammad Yuda Tri Ananda',
+    designation: 'Desain & pengembangan',
+    image: myudak,
+    href: 'https://github.com/myudak',
+  },
+];
 
 const links = ['Cara kerja', 'Privasi', 'Tentang', 'Pertanyaan umum'];
 
@@ -33,7 +45,7 @@ const stem = `M${P0.join(' ')} Q${P1.join(' ')} ${P2.join(' ')}`;
     <!-- Giant wordmark, scaled by JS to exactly fill the container width -->
     <div class="flex justify-center overflow-hidden" data-wordmark-box>
       <p
-        class="w-max whitespace-nowrap font-serif text-[14.6vw] leading-[0.95] tracking-[-0.035em] 2xl:text-[210px]"
+        class="w-max whitespace-nowrap font-serif text-[14.6vw] leading-[1.22] tracking-[-0.035em] 2xl:text-[210px]"
         aria-label="Indonesia.gov"
         data-wordmark
       >
@@ -41,7 +53,7 @@ const stem = `M${P0.join(' ')} Q${P1.join(' ')} ${P2.join(' ')}`;
       </p>
     </div>
 
-    <div class="mt-10 grid items-center gap-8 text-center text-[15px] sm:mt-12 lg:grid-cols-[1fr_auto_1fr] lg:text-left">
+    <div class="mt-2 grid items-center gap-8 text-center text-[15px] sm:mt-4 lg:grid-cols-[1fr_auto_1fr] lg:text-left">
       <div class="flex items-center justify-center gap-3 lg:justify-start" data-rise>
         <span class="grid size-10 shrink-0 place-items-center rounded-full border border-ink/25 bg-white shadow-[inset_0_0_0_3px_#fff,inset_0_0_0_4px_rgba(21,23,27,0.12)]">
           <Flag class="h-[10px] w-[15px]" />
@@ -61,7 +73,10 @@ const stem = `M${P0.join(' ')} Q${P1.join(' ')} ${P2.join(' ')}`;
         </svg>
       </div>
 
-      <p class="lg:text-right" data-rise>Dirancang &amp; dibangun di Indonesia</p>
+      <div class="flex items-center justify-center gap-3 lg:justify-end" data-rise>
+        <span>Dibuat oleh</span>
+        <AnimatedTooltip items={team} />
+      </div>
     </div>
 
     <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[15px]" data-rise>
