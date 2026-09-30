@@ -6,7 +6,7 @@ import { keys, pop, prog, rise } from '../lib/motion';
 const WORDMARK = 'Indonesia.gov';
 const STACK = ['Astro', 'GSAP', 'Tailwind CSS', 'Lenis', 'Remotion'];
 
-export const Outro: React.FC<{ credit: string }> = ({ credit }) => {
+export const Outro: React.FC<{ author: string; credit: string }> = ({ author, credit }) => {
   const frame = useCurrentFrame();
   const settle = keys(frame, [0, 250], [1.04, 1]);
 
@@ -15,7 +15,7 @@ export const Outro: React.FC<{ credit: string }> = ({ credit }) => {
       <div className="flex w-full flex-col items-center" style={{ transform: `scale(${settle})` }}>
         <p className="whitespace-nowrap font-serif text-[300px] leading-[0.95] tracking-[-0.035em]">
           {[...WORDMARK].map((ch, i) => (
-            <span key={i} className="inline-block overflow-hidden align-top">
+            <span key={i} className="-mb-[0.2em] inline-block overflow-hidden pb-[0.2em] align-top">
               <span className="inline-block" style={{ transform: `translateY(${(1 - prog(frame, 6 + i * 3, 60)) * 110}%)` }}>
                 {ch}
               </span>
@@ -41,8 +41,11 @@ export const Outro: React.FC<{ credit: string }> = ({ credit }) => {
           ))}
         </div>
 
-        <p className="mt-12 flex items-center gap-3 text-[22px] text-muted" style={rise(frame, 150, { dist: 14 })}>
-          <Flag className="h-[14px] w-[21px]" /> {credit}
+        <p className="mt-14 text-[30px] text-ink" style={rise(frame, 140, { dist: 16 })}>
+          Created by <span className="font-serif text-[40px] italic">{author}</span>
+        </p>
+        <p className="mt-4 flex items-center gap-3 text-[20px] text-muted" style={rise(frame, 155, { dist: 12 })}>
+          <Flag className="h-[13px] w-[20px]" /> {credit}
         </p>
       </div>
     </AbsoluteFill>

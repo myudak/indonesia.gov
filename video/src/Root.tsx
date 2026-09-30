@@ -16,9 +16,11 @@ import { Orbit } from './scenes/Orbit';
 import { Outro } from './scenes/Outro';
 
 loadSerif('normal', { weights: ['400'], subsets: ['latin'] });
+loadSerif('italic', { weights: ['400'], subsets: ['latin'] });
 loadSans('normal', { weights: ['400', '500', '600', '700'], subsets: ['latin'] });
 
-/** Edit this line to put your name on the end card */
+/** End-card credits */
+const AUTHOR = 'myudak';
 const CREDIT = 'Konsep desain portofolio · 2026';
 
 const T = 16; // transition length in frames
@@ -55,7 +57,7 @@ const Reel: React.FC = () => (
     </TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={fade()} timing={timing} />
     <TransitionSeries.Sequence durationInFrames={SCENES.outro}>
-      <Outro credit={CREDIT} />
+      <Outro author={AUTHOR} credit={CREDIT} />
     </TransitionSeries.Sequence>
   </TransitionSeries>
 );
