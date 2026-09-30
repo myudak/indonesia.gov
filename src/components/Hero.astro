@@ -12,19 +12,24 @@ const photoFor = (name: string) => photos[`../assets/scenes/${name}.png`]?.defau
   <div
     class="relative mx-auto max-w-[1440px] overflow-hidden rounded-[28px] bg-[radial-gradient(120%_80%_at_50%_0%,#ffffff_0%,#f4f3f0_55%,#eeece8_100%)] pb-14 sm:rounded-[44px] sm:pb-20"
   >
-    <header class="relative z-10 flex items-center justify-between px-4 pt-4 sm:px-10 sm:pt-7" data-reveal data-hero-nav>
-      <a href="/" class="flex items-center gap-2.5" aria-label="Indonesia.gov, beranda">
-        <Flag class="h-[16px] w-[24px]" />
-        <span class="font-serif text-[23px] leading-none tracking-[-0.01em]">Indonesia.gov</span>
-      </a>
-      <button
-        type="button"
-        data-menu-open
-        class="rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-merah active:scale-95"
-      >
-        Menu
-      </button>
-    </header>
+    <!-- Slot keeps the header's space while the bar is detached (fixed) on scroll -->
+    <div class="relative z-40" data-nav-slot>
+      <div class="nav-bar" data-nav-bar>
+        <header class="nav-inner flex items-center justify-between px-4 pt-4 sm:px-10 sm:pt-7" data-reveal data-hero-nav>
+          <a href="/" class="flex items-center gap-2.5" aria-label="Indonesia.gov, beranda">
+            <Flag class="h-[16px] w-[24px]" />
+            <span class="font-serif text-[23px] leading-none tracking-[-0.01em]">Indonesia.gov</span>
+          </a>
+          <button
+            type="button"
+            data-menu-open
+            class="rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-merah active:scale-95"
+          >
+            Menu
+          </button>
+        </header>
+      </div>
+    </div>
 
     <div class="px-4 pt-14 text-center sm:pt-24">
       <h1 class="font-serif text-[clamp(3.2rem,9vw,7rem)] leading-[0.95] tracking-[-0.02em]" data-reveal data-hero-title>
@@ -123,6 +128,41 @@ const photoFor = (name: string) => photos[`../assets/scenes/${name}.png`]?.defau
 </section>
 
 <style>
+  /* Header sits in the hero at rest. Once scrolled past, it detaches into a fixed bar parked
+     above the viewport; scrolling up slides it in, scrolling down tucks it away (like america.gov). */
+  .nav-bar.is-fixed {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 45;
+    background: #fff;
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+  .nav-bar.is-fixed .nav-inner {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  @media (min-width: 640px) {
+    .nav-bar.is-fixed .nav-inner {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+  }
+  .nav-bar.is-animated {
+    transition:
+      transform 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+      visibility 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .nav-bar.is-shown {
+    transform: translateY(0);
+    visibility: visible;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-bar.is-animated {
+      transition: none;
+    }
+  }
+
   .ctrl {
     display: grid;
     place-items: center;
@@ -320,6 +360,50 @@ const photoFor = (name: string) => photos[`../assets/scenes/${name}.png`]?.defau
     input.value = '';
     window.dispatchEvent(new CustomEvent('ask', { detail: q }));
   });
+
+  // ---------- header: detach on scroll, reveal on scroll up ----------
+  const slot = root.querySelector<HTMLElement>('[data-nav-slot]')!;
+  const bar = root.querySelector<HTMLElement>('[data-nav-bar]')!;
+  let fixed = false;
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  function detach(on: boolean) {
+    if (on === fixed) return;
+    fixed = on;
+    if (on) {
+      slot.style.height = `${slot.offsetHeight}px`; // hold the header's space in the hero
+      bar.classList.add('is-fixed');
+      // only turn the slide transition on once the bar is parked off-screen, so it never flashes
+      requestAnimationFrame(() => requestAnimationFrame(() => fixed && bar.classList.add('is-animated')));
+    } else {
+      bar.classList.remove('is-fixed', 'is-animated', 'is-shown');
+      slot.style.height = '';
+    }
+  }
+
+  function onScroll() {
+    ticking = false;
+    const y = window.scrollY;
+    const delta = y - lastY;
+    lastY = y;
+    const top = slot.getBoundingClientRect().top + y;
+    if (y <= top) return detach(false); // natural header is back in view at the top
+    if (!fixed && y < top + slot.offsetHeight) return; // still scrolling past it
+    detach(true);
+    if (Math.abs(delta) < 3) return; // ignore tiny jitters
+    bar.classList.toggle('is-shown', delta < 0);
+  }
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(onScroll);
+    },
+    { passive: true },
+  );
 </script>
 
 <style is:global>
